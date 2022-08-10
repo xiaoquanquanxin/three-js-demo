@@ -12,3 +12,15 @@
   left: 0;
   text-align: center;
 }
+
+/*帧率*/
+.frame {
+  position: absolute;
+  background-color: lightblue;
+  cursor: pointer;
+  line-height: 30px;
+  width: 100px;
+  top: 30px;
+  left: 0;
+  text-align: center;
+}

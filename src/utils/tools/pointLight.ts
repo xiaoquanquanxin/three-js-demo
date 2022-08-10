@@ -1,8 +1,9 @@
 import { PointLight } from "three";
 import { Color } from "three/src/math/Color";
 
-const pointLight = new PointLight(new Color(0x00ffff), 1);
-pointLight.position.set(10, 10, -10);
+//  点光源的影响的范围、影响的距离
+const pointLight = new PointLight(new Color(0xffffff), 10, 10);
+pointLight.position.set(-8, 2, -10);
 //  点光源
 const getPointLight = () => pointLight;
 

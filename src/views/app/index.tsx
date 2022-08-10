@@ -1,15 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import {
-  Scene,
-  WebGLRenderer,
-  Color,
-  AmbientLight,
-  DirectionalLight,
-  Group,
-  SpotLight,
-} from "three";
+import { Scene, WebGLRenderer, Color, Group, SpotLight, Clock } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
@@ -17,7 +9,9 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { setAxesHelper } from "src/utils/tools/axesHelper";
 import { getCamera } from "src/utils/tools/camera";
 import { setLightHelper } from "src/utils/tools/visualPointLightSource";
+import { setDirectionalLight } from "src/utils/tools/directionalLight";
 import "./App.css";
+import { setAmbientLight } from "src/utils/tools/ambientLight";
 
 const scene = new Scene();
 scene.background = new Color(0xbbbbbb);
@@ -42,39 +36,32 @@ setAxesHelper(scene);
 
 //  可视化点光源
 setLightHelper(scene);
+//  设置平行光
+setDirectionalLight(scene);
+//  设置环境光
+setAmbientLight(scene);
+
+//  定时器
+const clock = new Clock();
 
 function Index() {
+  const [frame, setFrame] = useState(0);
   const mainRef = useRef<HTMLDivElement | null>(null);
   //  塔组
   const [towerList, setTowerList] = useState<Array<Group>>([]);
   //  初始化
   const [initKey] = useState("initKey");
   const initList = useDebouncedCallback(() => {
-    //  环境光
-    const ambientLight1 = new AmbientLight(0xffffff, 0.4);
-    // const ambientLight2 = new AmbientLight(0xffffff, 0.4);
-    // const ambientLight3 = new AmbientLight(0xffffff, 0.4);
-    ambientLight1.position.set(0, 0, 0);
-    // ambientLight2.position.set(0, 0, 0);
-    // ambientLight3.position.set(0, 0, 0);
-    scene.add(ambientLight1);
-    // scene.add(ambientLight2);
-    // scene.add(ambientLight3);
-
-    //  平行光 黄色
-    const directionalLight = new DirectionalLight(0xffffff, 0.9);
-    directionalLight.position.set(40, 40, 100);
-    directionalLight.castShadow = true;
-    scene.add(directionalLight);
-
-    //  控制相机的位置
-    const controls = new OrbitControls(camera, mainRef.current);
-
     function animate() {
+      const spt = clock.getDelta() * 1000;
+      const frame = (1000 / spt) | 0;
+      setFrame(frame);
+      requestAnimationFrame(animate);
       renderer.render(scene, camera);
     }
 
-    controls.addEventListener("change", animate);
+    //  控制相机的位置
+    new OrbitControls(camera, mainRef.current);
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     (mainRef.current as HTMLDivElement).innerHTML = "";
@@ -101,19 +88,21 @@ function Index() {
         console.error(error);
       }
     );
+
+    //  渲染
+    animate();
   }, 0);
   useEffect(initList, [initKey, initList]);
 
-  //  渲染塔
-  const towerListRender = useDebouncedCallback(() => {
-    if (!towerList.length) {
-      return;
-    }
-    console.log("渲染", scene.children);
-    renderer.render(scene, camera);
-  }, 0);
-  //  渲染
-  useEffect(towerListRender, [towerList, towerListRender]);
+  // //  渲染塔
+  // const towerListRender = useDebouncedCallback(() => {
+  // 	if (!towerList.length) {
+  // 		return;
+  // 	}
+  // 	console.log('渲染', scene.children);
+  // }, 0);
+  // //  渲染
+  // useEffect(towerListRender, [towerList, towerListRender]);
 
   //  报警
   const alarmClick = () => {
@@ -172,6 +161,7 @@ function Index() {
       <div onClick={alarmClick} className={"alarm-button"}>
         报警
       </div>
+      <div className={"frame"}>帧率：{frame}</div>
       <div ref={mainRef} />
     </div>
   );
