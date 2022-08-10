@@ -1,0 +1,3 @@
+const useOnLoadHooks = () => {};
+
+export { useOnLoadHooks };
