@@ -1,67 +1,52 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from "react";
+import { useDebouncedCallback } from "use-debounce";
 import {
   Scene,
-  PerspectiveCamera,
   WebGLRenderer,
   Color,
   AmbientLight,
   DirectionalLight,
-  PointLight,
   Group,
   SpotLight,
-  Vector2,
-  Raycaster,
-  MOUSE,
 } from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { useDebouncedCallback } from "use-debounce";
+import { setAxesHelper } from "src/utils/tools/axesHelper";
+import { getCamera } from "src/utils/tools/camera";
+import { setLightHelper } from "src/utils/tools/visualPointLightSource";
 import "./App.css";
 
 const scene = new Scene();
-scene.background = new Color(0xdddddd);
+scene.background = new Color(0xbbbbbb);
+
+//  渲染器
 const renderer = new WebGLRenderer();
-const camera = new PerspectiveCamera(
-  50,
-  window.innerWidth / window.innerHeight,
-  1,
-  1000
-);
-camera.position.z = 10;
-camera.position.x = 30;
-camera.position.y = 20;
+
 //  添加素材
 const loader = new GLTFLoader();
 
 // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
 const composer = new EffectComposer(renderer);
+
+//  照相机
+const camera = getCamera();
 // 新建一个场景通道  为了覆盖到原理来的场景上
 const renderPass = new RenderPass(scene, camera);
 composer.addPass(renderPass);
 
-// //  射线
-// const raycaster = new Raycaster();
-// raycaster.setFromCamera({x: 1, y: 4}, camera);
-//
-// const intersects = raycaster.intersectObject(scene, true);
-//
-// if (intersects.length > 0) {
-// 	const selectedObject = intersects[0].object;
-// 	addSelectedObject(selectedObject);
-// 	outlinePass.selectedObjects = selectedObjects;
-// } else {
-// 	// outlinePass.selectedObjects = [];
-// }
+//  坐标轴
+setAxesHelper(scene);
+
+//  可视化点光源
+setLightHelper(scene);
 
 function Index() {
   const mainRef = useRef<HTMLDivElement | null>(null);
-
   //  塔组
   const [towerList, setTowerList] = useState<Array<Group>>([]);
-
   //  初始化
   const [initKey] = useState("initKey");
   const initList = useDebouncedCallback(() => {
@@ -82,7 +67,7 @@ function Index() {
     directionalLight.castShadow = true;
     scene.add(directionalLight);
 
-    //  控制
+    //  控制相机的位置
     const controls = new OrbitControls(camera, mainRef.current);
 
     function animate() {
