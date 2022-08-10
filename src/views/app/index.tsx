@@ -1,7 +1,15 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { Scene, WebGLRenderer, Color, Group, SpotLight, Clock } from "three";
+import {
+  Scene,
+  WebGLRenderer,
+  Color,
+  Group,
+  SpotLight,
+  Clock,
+  Vector3,
+} from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
@@ -10,9 +18,11 @@ import { setAxesHelper } from "src/utils/tools/axesHelper";
 import { getCamera } from "src/utils/tools/camera";
 import { setLightHelper } from "src/utils/tools/visualPointLightSource";
 import { setDirectionalLight } from "src/utils/tools/directionalLight";
-import "./App.css";
 import { setAmbientLight } from "src/utils/tools/ambientLight";
+import "./App.css";
 
+//  间距
+const space = 4;
 const scene = new Scene();
 scene.background = new Color(0xbbbbbb);
 
@@ -23,13 +33,13 @@ const renderer = new WebGLRenderer();
 const loader = new GLTFLoader();
 
 // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
-const composer = new EffectComposer(renderer);
+// const composer = new EffectComposer(renderer);
 
 //  照相机
 const camera = getCamera();
 // 新建一个场景通道  为了覆盖到原理来的场景上
-const renderPass = new RenderPass(scene, camera);
-composer.addPass(renderPass);
+// const renderPass = new RenderPass(scene, camera);
+// composer.addPass(renderPass);
 
 //  坐标轴
 setAxesHelper(scene);
@@ -61,7 +71,10 @@ function Index() {
     }
 
     //  控制相机的位置
-    new OrbitControls(camera, mainRef.current);
+    const orbitControls = new OrbitControls(camera, mainRef.current);
+    console.log(orbitControls);
+    orbitControls.target = new Vector3(-10, 0, -10);
+    orbitControls.update();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
     (mainRef.current as HTMLDivElement).innerHTML = "";
@@ -72,10 +85,10 @@ function Index() {
       "materialModels/tower/scene.gltf",
       function (gltf) {
         const list = [];
-        for (let i = -2; i < 3; i++) {
-          for (let j = -2; j < 3; j++) {
+        for (let i = -5; i < 6; i++) {
+          for (let j = -5; j < 6; j++) {
             const tower = gltf.scene.clone();
-            tower.position.set(i * 4, 0, j * 4);
+            tower.position.set(i * space, 0, j * space);
             list.push(tower);
             scene.add(tower);
           }
@@ -93,16 +106,6 @@ function Index() {
     animate();
   }, 0);
   useEffect(initList, [initKey, initList]);
-
-  // //  渲染塔
-  // const towerListRender = useDebouncedCallback(() => {
-  // 	if (!towerList.length) {
-  // 		return;
-  // 	}
-  // 	console.log('渲染', scene.children);
-  // }, 0);
-  // //  渲染
-  // useEffect(towerListRender, [towerList, towerListRender]);
 
   //  报警
   const alarmClick = () => {
@@ -134,21 +137,6 @@ function Index() {
 
         scene.add(spotLight);
         renderer.render(scene, camera);
-
-        return;
-
-        (() => {
-          console.log("deletedIndex", deletedIndex);
-          console.log("deletedItem", ...deletedItem);
-          // console.log(scene.children.length);
-          scene.children.splice(deletedIndex, 1);
-          // console.log(scene.children.length);
-          scene.add(gltf.scene);
-          console.log(deletedItem[0].position);
-          const { x, y, z } = deletedItem[0].position;
-          gltf.scene.position.set(x, y, z);
-          renderer.render(scene, camera);
-        })();
       },
       undefined,
       function (error) {
