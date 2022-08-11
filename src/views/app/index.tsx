@@ -1,29 +1,26 @@
 // @ts-nocheck
-import React, { useEffect, useRef, useState } from "react";
-import { useDebouncedCallback } from "use-debounce";
+import React, {useEffect, useRef, useState} from 'react';
+import {useDebouncedCallback} from 'use-debounce';
 import {
-  Scene,
-  WebGLRenderer,
-  Color,
-  Group,
-  SpotLight,
-  Clock,
-  Vector3,
-} from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { setAxesHelper } from "src/utils/tools/axesHelper";
-import { getCamera } from "src/utils/tools/camera";
-import { setLightHelper } from "src/utils/tools/visualPointLightSource";
-import { setDirectionalLight } from "src/utils/tools/directionalLight";
-import { setAmbientLight } from "src/utils/tools/ambientLight";
-import "./App.css";
-import { Text } from "src/components/text";
-import { text } from "stream/consumers";
-import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
-import { css2DRenderer } from "src/utils/tools/css2render";
+	Scene,
+	WebGLRenderer,
+	Color,
+	Group,
+	SpotLight,
+	Clock,
+	Vector3,
+} from 'three';
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
+import {setAxesHelper} from 'src/utils/tools/axesHelper';
+import {getCamera} from 'src/utils/tools/camera';
+import {setLightHelper} from 'src/utils/tools/visualPointLightSource';
+import {setDirectionalLight} from 'src/utils/tools/directionalLight';
+import {setAmbientLight} from 'src/utils/tools/ambientLight';
+import {Text} from 'src/components/text';
+import {CSS2DObject} from 'three/examples/jsm/renderers/CSS2DRenderer';
+import {css2DRenderer} from 'src/utils/tools/css2render';
+import './App.css';
 
 //  间距
 const space = 4;
@@ -59,116 +56,84 @@ setAmbientLight(scene);
 const clock = new Clock();
 
 function Index() {
-  //  text标签
-  const textRef = useRef(null);
-  const [frame, setFrame] = useState(0);
-  const mainRef = useRef<HTMLDivElement | null>(null);
-  //  塔组
-  const [towerList, setTowerList] = useState<Array<Group>>([]);
-  //  初始化
-  const [initKey] = useState("initKey");
-  const initList = useDebouncedCallback(() => {
-    function animate() {
-      const spt = clock.getDelta() * 1000;
-      const frame = (1000 / spt) | 0;
-      setFrame(frame);
-      requestAnimationFrame(animate);
-      //  2d渲染
-      css2DRenderer.render(scene, camera);
-      //  普通场景渲染
-      renderer.render(scene, camera);
-    }
+	//  text标签
+	const textRef = useRef(null);
+	const [frame, setFrame] = useState(0);
+	const mainRef = useRef<HTMLDivElement | null>(null);
+	//  塔组
+	const [towerList, setTowerList] = useState<Array<Group>>([]);
+	//  初始化
+	const [initKey] = useState('initKey');
+	const initList = useDebouncedCallback(() => {
+		function animate() {
+			const spt = clock.getDelta() * 1000;
+			const frame = (1000 / spt) | 0;
+			setFrame(frame);
+			requestAnimationFrame(animate);
+			//  2d渲染
+			css2DRenderer.render(scene, camera);
+			//  普通场景渲染
+			renderer.render(scene, camera);
+		}
 
-    //  控制相机的位置
-    const orbitControls = new OrbitControls(camera, mainRef.current);
-    console.log(orbitControls);
-    orbitControls.target = new Vector3(-10, 0, -10);
-    orbitControls.update();
+		//  控制相机的位置
+		const orbitControls = new OrbitControls(camera, mainRef.current);
+		console.log(orbitControls);
+		orbitControls.target = new Vector3(-10, 0, -10);
+		orbitControls.update();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    (mainRef.current as HTMLDivElement).innerHTML = "";
-    (mainRef.current as HTMLDivElement).appendChild(renderer.domElement);
-    console.log("只执行一次");
+		renderer.setSize(window.innerWidth, window.innerHeight);
+		(mainRef.current as HTMLDivElement).innerHTML = '';
+		(mainRef.current as HTMLDivElement).appendChild(renderer.domElement);
+		console.log('只执行一次');
 
-    loader.load(
-      "materialModels/tower/scene.gltf",
-      function (gltf) {
-        const list = [];
-        for (let i = -5; i < 6; i++) {
-          for (let j = -5; j < 6; j++) {
-            const tower = gltf.scene.clone();
-            tower.position.set(i * space, 0, j * space);
-            list.push(tower);
-            scene.add(tower);
-          }
-        }
-        //  存 state
-        setTowerList(list);
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
+		loader.load(
+			'materialModels/tower/scene.gltf',
+			function (gltf) {
+				const list = [];
+				for (let i = -5; i < 6; i++) {
+					for (let j = -5; j < 6; j++) {
+						const tower = gltf.scene.clone();
+						tower.position.set(i * space, 0, j * space);
+						list.push(tower);
+						scene.add(tower);
+					}
+				}
+				//  存 state
+				setTowerList(list);
+			},
+			undefined,
+			function (error) {
+				console.error(error);
+			}
+		);
 
-    //  文本标签
-    const label = new CSS2DObject(textRef.current);
-    console.log(label);
-    label.position.set(-10, 10, -10);
-    scene.add(label);
+		//  文本标签
+		const label = new CSS2DObject(textRef.current);
+		console.log(label);
+		label.position.set(-10, 10, -10);
+		scene.add(label);
 
-    //  渲染
-    animate();
-  }, 0);
-  useEffect(initList, [initKey, initList]);
+		//  渲染
+		animate();
+	}, 0);
+	useEffect(initList, [initKey, initList]);
 
-  //  报警
-  const alarmClick = () => {
-    loader.load(
-      "materialModels/crystle/scene.gltf",
-      function (gltf) {
-        // const index = (Math.random() * towerList.length) | 0;
-        const index = 8;
-        const deletedItem = towerList[index];
-        console.log("deletedItem", deletedItem);
-        // outlineObj(scene);
-        return;
-        const deletedIndex = scene.children.indexOf(deletedItem);
-        const spotLight = new SpotLight(0xffffff);
-        spotLight.castShadow = true; //开启阴影效果
-        spotLight.shadow = 30; //投影视场，聚光的角度大小
-        const { x, y, z } = deletedItem.position;
-        console.log("deletedItem", deletedItem);
-        console.log("x,y,z", x, y, z);
-        //  位置
-        spotLight.position.set(x, y, z);
+	//  报警
+	const alarmClick = () => {
 
-        //  光照的方向。 plane： 地面
-        spotLight.target = scene;
-        //  光照距离，默认为0.
-        spotLight.distance = 0;
-        //  光源发射的宽度（弧度）
-        spotLight.angle = 0.4;
 
-        scene.add(spotLight);
-        renderer.render(scene, camera);
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
-  };
-  return (
-    <div className="App">
-      <div onClick={alarmClick} className={"alarm-button"}>
-        报警
-      </div>
-      <div className={"frame"}>帧率：{frame}</div>
-      <div ref={mainRef} />
-      <Text text={"我是权鑫"} childRef={textRef} />
-    </div>
-  );
+	};
+	return (
+		<div className="App">
+			<div onClick={alarmClick} className={'alarm-button'}>
+				报警
+			</div>
+			<div className={'frame'}>帧率：{frame}</div>
+			<div ref={mainRef}/>
+			<Text text={'我是权鑫'} childRef={textRef}/>
+		</div>
+	);
 }
 
 export default Index;
