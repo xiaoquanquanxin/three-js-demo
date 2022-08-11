@@ -20,6 +20,10 @@ import { setLightHelper } from "src/utils/tools/visualPointLightSource";
 import { setDirectionalLight } from "src/utils/tools/directionalLight";
 import { setAmbientLight } from "src/utils/tools/ambientLight";
 import "./App.css";
+import { Text } from "src/components/text";
+import { text } from "stream/consumers";
+import { CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer";
+import { css2DRenderer } from "src/utils/tools/css2render";
 
 //  间距
 const space = 4;
@@ -55,6 +59,8 @@ setAmbientLight(scene);
 const clock = new Clock();
 
 function Index() {
+  //  text标签
+  const textRef = useRef(null);
   const [frame, setFrame] = useState(0);
   const mainRef = useRef<HTMLDivElement | null>(null);
   //  塔组
@@ -67,6 +73,9 @@ function Index() {
       const frame = (1000 / spt) | 0;
       setFrame(frame);
       requestAnimationFrame(animate);
+      //  2d渲染
+      css2DRenderer.render(scene, camera);
+      //  普通场景渲染
       renderer.render(scene, camera);
     }
 
@@ -101,6 +110,12 @@ function Index() {
         console.error(error);
       }
     );
+
+    //  文本标签
+    const label = new CSS2DObject(textRef.current);
+    console.log(label);
+    label.position.set(-10, 10, -10);
+    scene.add(label);
 
     //  渲染
     animate();
@@ -151,6 +166,7 @@ function Index() {
       </div>
       <div className={"frame"}>帧率：{frame}</div>
       <div ref={mainRef} />
+      <Text text={"我是权鑫"} childRef={textRef} />
     </div>
   );
 }
