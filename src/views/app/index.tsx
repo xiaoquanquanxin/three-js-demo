@@ -78,7 +78,6 @@ function Index() {
 
 		//  控制相机的位置
 		const orbitControls = new OrbitControls(camera, mainRef.current);
-		console.log(orbitControls);
 		orbitControls.target = new Vector3(-10, 0, -10);
 		orbitControls.update();
 
@@ -110,7 +109,6 @@ function Index() {
 
 		//  文本标签
 		const label = new CSS2DObject(textRef.current);
-		console.log(label);
 		label.position.set(-10, 10, -10);
 		scene.add(label);
 
