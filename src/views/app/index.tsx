@@ -24,6 +24,16 @@ import "./App.css";
 import { loadGltf } from "src/utils/tools/loaders/gltfLoader";
 import { addMaterialToScene } from "src/utils/tools/material/addMaterialToScene";
 import { orbitControlsPosition } from "src/constants/initConfig/positions";
+import {
+  towerGroupPosition1,
+  towerGroupPosition2,
+  towerGroupPosition3,
+  towerGroupPosition4,
+  towerGroupPosition5,
+  towerGroupPosition6,
+} from "src/constants/material/tower";
+import { crystleGroupPosition1 } from "src/constants/material/crystle";
+import { mediumHouseGroupPosition1 } from "src/constants/material/mediumHouse";
 
 //  场景
 const scene = new Scene();
@@ -64,6 +74,8 @@ function Index() {
   //  初始化
   const [initKey] = useState("initKey");
   const initList = useDebouncedCallback(async () => {
+    console.clear();
+
     //  渲染
     function animate() {
       const spt = clock.getDelta() * 1000;
@@ -72,6 +84,15 @@ function Index() {
       requestAnimationFrame(animate);
       //  2d渲染
       css2DRenderer.render(scene, camera);
+      camera.setViewOffset(
+        window.innerWidth,
+        window.innerHeight,
+        0,
+        0,
+        window.innerWidth,
+        window.innerHeight
+      );
+      renderer.setSize(window.innerWidth, window.innerHeight);
       //  普通场景渲染
       renderer.render(scene, camera);
     }
@@ -82,7 +103,6 @@ function Index() {
     orbitControls.target = new Vector3(...orbitControlsPosition);
     orbitControls.update();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
     (mainRef.current as HTMLDivElement).innerHTML = "";
     (mainRef.current as HTMLDivElement).appendChild(renderer.domElement);
     console.log("只执行一次");
@@ -91,20 +111,21 @@ function Index() {
     const tower = await loadGltf("materialModels/tower/scene.gltf");
     console.log("tower", tower);
     //  添加素材 到场景
+    addMaterialToScene(tower, scene, towerGroupPosition1, setTowerList);
+    addMaterialToScene(tower, scene, towerGroupPosition2, setTowerList);
+    addMaterialToScene(tower, scene, towerGroupPosition3, setTowerList);
+    addMaterialToScene(tower, scene, towerGroupPosition4, setTowerList);
+    addMaterialToScene(tower, scene, towerGroupPosition5, setTowerList);
+    addMaterialToScene(tower, scene, towerGroupPosition6, setTowerList);
+
+    //  加载素材 - 2
+    const mediumHouse = await loadGltf("materialModels/mediumHouse/scene.gltf");
+    console.log("mediumHouse", mediumHouse);
+    //  添加素材 到场景
     addMaterialToScene(
-      tower,
+      mediumHouse,
       scene,
-      {
-        xStart: 0,
-        xSpace: 3,
-        xCount: 3,
-        yStart: 0,
-        ySpace: 0,
-        yCount: 1,
-        zStart: 0,
-        zSpace: 3,
-        zCount: 3,
-      },
+      mediumHouseGroupPosition1,
       setTowerList
     );
 
