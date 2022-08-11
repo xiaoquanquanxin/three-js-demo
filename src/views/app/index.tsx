@@ -18,7 +18,7 @@ import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { crystleGroupPosition1 } from 'src/constants/material/crystle'
-import { mediumHouseGroupPosition1 } from 'src/constants/material/mediumHouse'
+import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 
 //  场景
 const scene = new Scene()
@@ -80,7 +80,6 @@ function Index() {
         //  摄像机看到的初始位置
         orbitControls.target = new Vector3(...orbitControlsPosition)
         orbitControls.update()
-
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('只执行一次')
@@ -101,6 +100,9 @@ function Index() {
         console.log('mediumHouse', mediumHouse)
         //  添加素材 到场景
         addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1, setTowerList)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2, setTowerList)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3, setTowerList)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4, setTowerList)
 
         //  文本标签
         const label = new CSS2DObject(textRef.current)
@@ -120,12 +122,12 @@ function Index() {
     const alarmClick = () => {}
     return (
         <div className="App">
+            <div className={'frame'}>帧率：{frame}</div>
             <div onClick={alarmClick} className={'alarm-button'}>
                 报警
             </div>
-            <div className={'frame'}>帧率：{frame}</div>
-            <div ref={mainRef} />
             <Text text={'我是权鑫'} childRef={textRef} />
+            <div ref={mainRef} />
         </div>
     )
 }
