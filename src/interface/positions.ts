@@ -1,2 +1,2 @@
 //  位置参数
-type PositionsType = [number, number, number];
+type PositionsType = [number, number, number]

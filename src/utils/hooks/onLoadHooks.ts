@@ -1,3 +1,3 @@
-const useOnLoadHooks = () => {};
+const useOnLoadHooks = () => {}
 
-export { useOnLoadHooks };
+export { useOnLoadHooks }
