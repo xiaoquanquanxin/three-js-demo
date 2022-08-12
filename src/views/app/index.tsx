@@ -1,24 +1,23 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
-import { useDebouncedCallback } from 'use-debounce'
-import { Scene, WebGLRenderer, Color, Group, SpotLight, Clock, Vector3 } from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { Scene, WebGLRenderer, Color, Group, Clock, Vector3 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
 import { getCamera } from 'src/utils/tools/camera'
 import { setLightHelper } from 'src/utils/tools/visualPointLightSource'
 import { setDirectionalLight } from 'src/utils/tools/directionalLight'
 import { setAmbientLight } from 'src/utils/tools/ambientLight'
 import { Text } from 'src/components/text'
-import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { css2DRenderer } from 'src/utils/tools/css2render'
-import './App.css'
 import { loadGltf } from 'src/utils/tools/loaders/gltfLoader'
+import { setGeometry } from 'src/utils/convexGeometry'
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
+import { css2DRenderer } from 'src/utils/tools/css2render'
 import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
-import { crystleGroupPosition1 } from 'src/constants/material/crystle'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
+import './App.css'
 
 //  场景
 const scene = new Scene()
@@ -108,6 +107,9 @@ function Index() {
         const label = new CSS2DObject(textRef.current)
         label.position.set(-10, 10, -10)
         scene.add(label)
+
+        //  设置几何体
+        setGeometry(scene)
 
         //  渲染
         animate()
