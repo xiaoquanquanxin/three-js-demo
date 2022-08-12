@@ -11,20 +11,26 @@ import { setDirectionalLight } from 'src/utils/tools/directionalLight'
 import { setAmbientLight } from 'src/utils/tools/ambientLight'
 import { Text } from 'src/components/text'
 import { loadGltf } from 'src/utils/tools/loaders/gltfLoader'
-import { setGeometry } from 'src/utils/convexGeometry'
+import { setGeometry } from 'src/utils/convexGeometry/cylinderGeometry'
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { css2DRenderer } from 'src/utils/tools/css2render'
 import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import './App.css'
+import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
 
 //  场景
 const scene = new Scene()
 scene.background = new Color(0xbbbbbb)
 
 //  渲染器
-const renderer = new WebGLRenderer()
+const renderer = new WebGLRenderer({
+    //  消除锯齿
+    antialias: true
+})
+//  设置渲染器开启阴影
+renderer.shadowMap.enabled = true
 
 // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
 // const composer = new EffectComposer(renderer);
@@ -44,6 +50,19 @@ setLightHelper(scene)
 setDirectionalLight(scene)
 //  设置环境光
 setAmbientLight(scene)
+//  设置几何体 - 圆锥
+setGeometry(scene)
+//  设置地面
+setPlaneMesh(scene)
+
+window.onload = () => {
+    console.log('onload')
+    //  控制摄像机的位置
+    const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
+    //  摄像机看到的初始位置
+    orbitControls.target = new Vector3(...orbitControlsPosition)
+    orbitControls.update()
+}
 
 //  定时器
 const clock = new Clock()
@@ -74,11 +93,6 @@ function Index() {
             renderer.render(scene, camera)
         }
 
-        //  控制摄像机的位置
-        const orbitControls = new OrbitControls(camera, mainRef.current)
-        //  摄像机看到的初始位置
-        orbitControls.target = new Vector3(...orbitControlsPosition)
-        orbitControls.update()
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('只执行一次')
@@ -108,9 +122,6 @@ function Index() {
         label.position.set(-10, 10, -10)
         scene.add(label)
 
-        //  设置几何体
-        setGeometry(scene)
-
         //  渲染
         animate()
 
@@ -129,7 +140,7 @@ function Index() {
                 报警
             </div>
             <Text text={'我是权鑫'} childRef={textRef} />
-            <div ref={mainRef} />
+            <div ref={mainRef} id="mainRef" />
         </div>
     )
 }
