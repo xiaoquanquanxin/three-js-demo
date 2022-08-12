@@ -13,9 +13,11 @@ const cylinderGeometry = new Mesh(new CylinderGeometry(0, 1, 2, 10000, 1), mater
 cylinderGeometry.position.set(...cylinderGeometryPosition)
 //  上下颠倒
 cylinderGeometry.scale.set(1, -1, 1)
+//  设置圆锥投影
+cylinderGeometry.castShadow = true
 
 //  获取圆锥体
-const getGeometry = () => mesh
+const getGeometry = () => geometry
 //  设置圆锥体
 const setGeometry = (scene: Scene) => {
     scene.add(mesh)

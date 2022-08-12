@@ -1,4 +1,4 @@
-import { PointLight } from 'three'
+import { PointLight, Scene } from 'three'
 import { pointLightInitParams, pointLightInitPosition } from 'src/constants/initConfig/pointLight'
 
 //  点光源的影响的范围、影响的距离
@@ -8,6 +8,12 @@ pointLight.position.set(...pointLightInitPosition)
 pointLight.castShadow = true
 
 //  点光源
-const getPointLight = () => pointLight
+const getPointLight = (): PointLight => pointLight
 
-export { getPointLight }
+//  设置点光源
+const setPointLight = (scene: Scene): PointLight => {
+    scene.add(pointLight)
+    return getPointLight()
+}
+
+export { getPointLight, setPointLight }

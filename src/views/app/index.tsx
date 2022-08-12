@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Scene, WebGLRenderer, Color, Group, Clock, Vector3 } from 'three'
+import { Scene, WebGLRenderer, Color, Group, Clock, Vector3, PCFSoftShadowMap, DirectionalLight } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
@@ -19,6 +19,7 @@ import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGro
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import './App.css'
 import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
+import { setPointLight } from 'src/utils/tools/pointLight'
 
 //  场景
 const scene = new Scene()
@@ -31,6 +32,7 @@ const renderer = new WebGLRenderer({
 })
 //  设置渲染器开启阴影
 renderer.shadowMap.enabled = true
+renderer.shadowMap.type = PCFSoftShadowMap
 
 // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
 // const composer = new EffectComposer(renderer);
@@ -43,11 +45,10 @@ const camera = getCamera()
 
 //  坐标轴
 setAxesHelper(scene)
-
-//  可视化点光源
-setLightHelper(scene)
+//  设置点光源
+setPointLight(scene)
 //  设置平行光
-setDirectionalLight(scene)
+const directionalLight = setDirectionalLight(scene)
 //  设置环境光
 setAmbientLight(scene)
 //  设置几何体 - 圆锥
@@ -77,8 +78,6 @@ function Index() {
     //  初始化
     const [initKey] = useState('initKey')
     const initList = useDebouncedCallback(async () => {
-        console.clear()
-
         //  渲染
         function animate() {
             const spt = clock.getDelta() * 1000

@@ -7,9 +7,13 @@ directionalLight.position.set(...directionalLightInitPosition)
 //  让光源产生阴影效果
 directionalLight.castShadow = true
 
+//  获取平行光
+const getDirectionalLight = (): DirectionalLight => directionalLight
+
 //  设置平行光
-const setDirectionalLight = (scene: Scene) => {
+const setDirectionalLight = (scene: Scene): DirectionalLight => {
     scene.add(directionalLight)
+    return getDirectionalLight()
 }
 
-export { setDirectionalLight }
+export { setDirectionalLight, getDirectionalLight }

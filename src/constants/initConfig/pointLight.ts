@@ -5,11 +5,11 @@ import { ColorRepresentation } from 'three/src/utils'
 const pointLightInitParams: [ColorRepresentation, number?, number?, number?] = [
     new Color(0x6666ff),
     //  强度
-    100,
+    1,
     //  影响范围
-    20,
+    10,
     //  衰减
-    10
+    0.1
 ]
 //  点光源初始位置
 const pointLightInitPosition: PositionsType = [-2, 2, 4]
