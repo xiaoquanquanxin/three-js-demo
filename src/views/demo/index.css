@@ -14,7 +14,7 @@
 }
 
 /*帧率*/
-.frame {
+.frame-div {
     position: absolute;
     background-color: lightblue;
     cursor: pointer;

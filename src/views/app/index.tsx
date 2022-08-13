@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Scene, WebGLRenderer, Color, Group, Clock, Vector3 } from 'three'
+import { Scene, WebGLRenderer, Color, Group, Clock, Vector3, sRGBEncoding, LinearEncoding } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
@@ -19,6 +19,7 @@ import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import './index.css'
+import { streetLightGroupPosition1 } from 'src/constants/material/streetLight'
 
 //  场景
 const scene = new Scene()
@@ -29,6 +30,10 @@ const renderer = new WebGLRenderer({
     //  消除锯齿
     antialias: true
 })
+//  防止输出模糊
+renderer.setPixelRatio(window.devicePixelRatio)
+//  渲染细节
+renderer.outputEncoding = sRGBEncoding
 
 // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
 // const composer = new EffectComposer(renderer);
@@ -42,11 +47,11 @@ const camera = getCamera()
 //  坐标轴
 setAxesHelper(scene)
 //  设置点光源
-setPointLight(scene)
+// setPointLight(scene)
 //  设置平行光
 setDirectionalLight(scene)
 //  设置环境光
-setAmbientLight(scene)
+// setAmbientLight(scene)
 //  设置几何体 - 圆锥
 setGeometry(scene)
 //  设置地面
@@ -96,7 +101,7 @@ function Index() {
 
         //  加载素材 - 塔楼
         const tower = await loadGltf('materialModels/tower/scene.gltf')
-        console.log('tower', tower)
+        console.log('加载素材 - 塔楼', tower)
         //  添加素材 到场景
         addMaterialToScene(tower, scene, towerGroupPosition1, setTowerList)
         addMaterialToScene(tower, scene, towerGroupPosition2, setTowerList)
@@ -105,14 +110,19 @@ function Index() {
         addMaterialToScene(tower, scene, towerGroupPosition5, setTowerList)
         addMaterialToScene(tower, scene, towerGroupPosition6, setTowerList)
 
-        //  加载素材 - 2
+        //  加载素材 - 中等的房子
         const mediumHouse = await loadGltf('materialModels/mediumHouse/scene.gltf')
-        console.log('mediumHouse', mediumHouse)
+        console.log('加载素材 - 中等的房子', mediumHouse)
         //  添加素材 到场景
         addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1, setTowerList)
         addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2, setTowerList)
         addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3, setTowerList)
         addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4, setTowerList)
+
+        //  加载素材 - 路灯
+        const streetLight = await loadGltf('materialModels/streetlight/scene.gltf')
+        console.log('加载素材 - 路灯', mediumHouse)
+        addMaterialToScene(streetLight, scene, streetLightGroupPosition1, setTowerList)
 
         //  文本标签
         const label = new CSS2DObject(textRef.current)
