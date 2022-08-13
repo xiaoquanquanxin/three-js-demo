@@ -4,7 +4,7 @@ import { Mesh, MeshPhongMaterial, PlaneGeometry, Scene } from 'three'
 const ground = new PlaneGeometry(100, 100)
 const materialPlane = new MeshPhongMaterial({
     color: 0xffffff,
-    shininess: 100,
+    shininess: 10,
     specular: 0x333333
 })
 

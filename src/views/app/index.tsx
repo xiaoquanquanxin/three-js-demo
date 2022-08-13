@@ -1,7 +1,9 @@
 //  @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Scene, WebGLRenderer, Color, Group, Clock, Vector3, sRGBEncoding, SpotLight, SpotLightHelper, Object3D, CameraHelper } from 'three'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { Scene, Color, Group, Clock, Vector3, sRGBEncoding, SpotLight, SpotLightHelper, Object3D, CameraHelper, PCFShadowMap, PCFSoftShadowMap, WebGL1Renderer } from 'three'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
@@ -18,33 +20,37 @@ import { css2DRenderer } from 'src/utils/tools/css2render'
 import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
-import './index.css'
-import { streetLampGroupPosition1, streetLampGroupPosition2, streetLightGroupPosition1, streetLightGroupPosition2 } from 'src/constants/material/streetLight'
 import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
+import { setHemisphereLight } from 'src/utils/tools/hemisphereLight'
+import { streetLampGroupPosition1, streetLampGroupPosition2, streetLightGroupPosition1, streetLightGroupPosition2 } from 'src/constants/material/streetLight'
+import './index.css'
 
 //  场景
 const scene = new Scene()
 scene.background = new Color(0x111133)
 
 //  渲染器
-const renderer = new WebGLRenderer({
+
+const renderer = new WebGL1Renderer({
     //  消除锯齿
-    antialias: true
+    antialias: true,
+    alpha: true
 })
 //  防止输出模糊
 renderer.setPixelRatio(window.devicePixelRatio)
 //  渲染细节
 renderer.outputEncoding = sRGBEncoding
+renderer.shadowMap.type = PCFShadowMap
+//  设置渲染器开启阴影
+renderer.shadowMap.enabled = true
 
 //  照摄像机
 const camera = getCamera()
 //  新建一个场景通道  为了覆盖到原理来的场景上
-const renderPass = new RenderPass(scene, camera)
+// const renderPass = new RenderPass(scene, camera);
 //  创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
-const composer = new EffectComposer(renderer)
-composer.addPass(renderPass)
+// const composer = new EffectComposer(renderer);
+// composer.addPass(renderPass);
 
 //  坐标轴
 setAxesHelper(scene)
@@ -52,8 +58,12 @@ setAxesHelper(scene)
 //  setPointLight(scene)
 //  设置平行光
 setDirectionalLight(scene)
+//  设置半球光
+// setHemisphereLight(scene);
+//  【平面光】光源
+// areaLight
 //  设置环境光
-setAmbientLight(scene)
+// setAmbientLight(scene);
 //  设置几何体 - 圆锥
 setGeometry(scene)
 //  设置地面
@@ -64,7 +74,7 @@ window.onload = () => {
     //  控制摄像机的位置
     const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
     //  摄像机看到的初始位置
-    orbitControls.target = new Vector3(...orbitControlsPosition)
+    orbitControls.target = new Vector3()
     orbitControls.update()
 }
 
@@ -84,8 +94,6 @@ function animate() {
     css2DRenderer.render(scene, camera)
     camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
     renderer.setSize(window.innerWidth, window.innerHeight)
-    //  设置渲染器开启阴影
-    renderer.shadowMap.enabled = true
     //  普通场景渲染
     renderer.render(scene, camera)
 }
@@ -100,7 +108,8 @@ function Index() {
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('%c只执行一次', 'color:green;')
-
+        //  渲染
+        animate()
         //  加载素材 - 塔楼
         const tower = await loadGltf('materialModels/tower/scene.gltf')
         console.log('加载素材 - 塔楼', tower)
@@ -145,9 +154,6 @@ function Index() {
         const label = new CSS2DObject(textRef.current)
         label.position.set(-10, 10, -10)
         scene.add(label)
-
-        //  渲染
-        animate()
 
         return () => {}
     }, 0)

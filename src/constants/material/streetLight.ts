@@ -15,7 +15,7 @@ const streetLightGroupPosition1: ParamsPositionInterType = {
     yCount: 1,
     zStart: basicZStart,
     zSpace: basicSpace,
-    zCount: 6
+    zCount: 3
 }
 
 //  路灯组2
@@ -28,7 +28,7 @@ const streetLightGroupPosition2: ParamsPositionInterType = {
     yCount: 1,
     zStart: basicZStart + basicSpace / 2,
     zSpace: basicSpace,
-    zCount: 6
+    zCount: 3
 }
 //  x轴相对偏移值，因为灯泡和灯柱不一样的位置
 const streetLampXDiff = 2.3 - basicXStart
