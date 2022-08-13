@@ -14,7 +14,7 @@ const cameraPosition: PositionsType = [50, 30, 35]
 // ];
 
 //  摄像机看的初始位置
-const orbitControlsPosition: PositionsType = [0, 0, 0]
+const orbitControlsPosition: PositionsType = [0, 0, 10]
 
 //  摄像机的观察范围
 const cameraInitRange = [

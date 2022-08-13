@@ -26,7 +26,7 @@ import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer
 
 //  场景
 const scene = new Scene()
-scene.background = new Color(0xbbbbbb)
+scene.background = new Color(0x111133)
 
 //  渲染器
 const renderer = new WebGLRenderer({
@@ -99,7 +99,7 @@ function Index() {
     const initList = useDebouncedCallback(async () => {
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
-        console.log('只执行一次')
+        console.log('%c只执行一次', 'color:green;')
 
         //  加载素材 - 塔楼
         const tower = await loadGltf('materialModels/tower/scene.gltf')

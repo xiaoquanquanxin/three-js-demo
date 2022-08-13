@@ -4,7 +4,7 @@ import { Vector3 } from 'three/src/math/Vector3'
 import { cylinderGeometryPosition } from 'src/constants/initConfig/cylinderGeometry'
 
 //  圆锥体
-const geometry = new ConvexGeometry([new Vector3(2, 3, 5)])
+const geometry = new ConvexGeometry()
 //  得是感光材质
 const material = new MeshLambertMaterial({ color: 0xff7c7c })
 const mesh = new Mesh(geometry, material)
