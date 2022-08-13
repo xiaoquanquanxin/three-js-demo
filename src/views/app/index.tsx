@@ -1,7 +1,7 @@
-// @ts-nocheck
+//  @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Scene, WebGLRenderer, Color, Group, Clock, Vector3, sRGBEncoding, LinearEncoding } from 'three'
+import { Scene, WebGLRenderer, Color, Group, Clock, Vector3, sRGBEncoding, SpotLight, SpotLightHelper, Object3D, CameraHelper } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
@@ -19,7 +19,10 @@ import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import './index.css'
-import { streetLightGroupPosition1 } from 'src/constants/material/streetLight'
+import { streetLampGroupPosition1, streetLampGroupPosition2, streetLampGroupPosition3, streetLightGroupPosition1 } from 'src/constants/material/streetLight'
+import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
 
 //  场景
 const scene = new Scene()
@@ -35,23 +38,22 @@ renderer.setPixelRatio(window.devicePixelRatio)
 //  渲染细节
 renderer.outputEncoding = sRGBEncoding
 
-// 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
-// const composer = new EffectComposer(renderer);
-
 //  照摄像机
 const camera = getCamera()
-// 新建一个场景通道  为了覆盖到原理来的场景上
-// const renderPass = new RenderPass(scene, camera);
-// composer.addPass(renderPass);
+//  新建一个场景通道  为了覆盖到原理来的场景上
+const renderPass = new RenderPass(scene, camera)
+//  创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
+const composer = new EffectComposer(renderer)
+composer.addPass(renderPass)
 
 //  坐标轴
 setAxesHelper(scene)
 //  设置点光源
-// setPointLight(scene)
+//  setPointLight(scene)
 //  设置平行光
 setDirectionalLight(scene)
 //  设置环境光
-// setAmbientLight(scene)
+//  setAmbientLight(scene)
 //  设置几何体 - 圆锥
 setGeometry(scene)
 //  设置地面
@@ -121,8 +123,14 @@ function Index() {
 
         //  加载素材 - 路灯
         const streetLight = await loadGltf('materialModels/streetlight/scene.gltf')
+        streetLight.scene.rotation.set(0, -(1 / 4.5) * Math.PI, 0)
         console.log('加载素材 - 路灯', mediumHouse)
         addMaterialToScene(streetLight, scene, streetLightGroupPosition1, setTowerList)
+
+        //  添加光源
+        setStreetLamp(scene, ...streetLampGroupPosition1)
+        setStreetLamp(scene, ...streetLampGroupPosition2)
+        setStreetLamp(scene, ...streetLampGroupPosition3)
 
         //  文本标签
         const label = new CSS2DObject(textRef.current)
