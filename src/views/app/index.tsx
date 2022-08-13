@@ -1,25 +1,24 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { Scene, WebGLRenderer, Color, Group, Clock, Vector3, PCFSoftShadowMap, DirectionalLight } from 'three'
+import { Scene, WebGLRenderer, Color, Group, Clock, Vector3 } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
 import { getCamera } from 'src/utils/tools/camera'
-import { setLightHelper } from 'src/utils/tools/visualPointLightSource'
 import { setDirectionalLight } from 'src/utils/tools/directionalLight'
 import { setAmbientLight } from 'src/utils/tools/ambientLight'
 import { Text } from 'src/components/text'
 import { loadGltf } from 'src/utils/tools/loaders/gltfLoader'
 import { setGeometry } from 'src/utils/convexGeometry/cylinderGeometry'
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
+import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
+import { setPointLight } from 'src/utils/tools/pointLight'
 import { css2DRenderer } from 'src/utils/tools/css2render'
 import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
-import './App.css'
-import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
-import { setPointLight } from 'src/utils/tools/pointLight'
+import './index.css'
 
 //  场景
 const scene = new Scene()
@@ -30,9 +29,6 @@ const renderer = new WebGLRenderer({
     //  消除锯齿
     antialias: true
 })
-//  设置渲染器开启阴影
-renderer.shadowMap.enabled = true
-renderer.shadowMap.type = PCFSoftShadowMap
 
 // 创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
 // const composer = new EffectComposer(renderer);
@@ -48,7 +44,7 @@ setAxesHelper(scene)
 //  设置点光源
 setPointLight(scene)
 //  设置平行光
-const directionalLight = setDirectionalLight(scene)
+setDirectionalLight(scene)
 //  设置环境光
 setAmbientLight(scene)
 //  设置几何体 - 圆锥
@@ -88,6 +84,8 @@ function Index() {
             css2DRenderer.render(scene, camera)
             camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
             renderer.setSize(window.innerWidth, window.innerHeight)
+            //  设置渲染器开启阴影
+            renderer.shadowMap.enabled = true
             //  普通场景渲染
             renderer.render(scene, camera)
         }

@@ -1,15 +1,20 @@
-import { Mesh, MeshLambertMaterial, PlaneGeometry, Scene } from 'three'
+import { Mesh, MeshPhongMaterial, PlaneGeometry, Scene } from 'three'
 
 //  地面
-const ground = new PlaneGeometry(1000, 1000)
-const materialPlane = new MeshLambertMaterial({
-    color: 0xffffff
+const ground = new PlaneGeometry(100, 100)
+const materialPlane = new MeshPhongMaterial({
+    color: 0xffffff,
+    shininess: 150,
+    specular: 0xffffff
 })
+
 const groundMesh = new Mesh(ground, materialPlane)
 //  沿x轴翻转90°，即为展平效果
-groundMesh.rotation.x = -0.5 * Math.PI
+groundMesh.rotation.set(-0.5 * Math.PI, 0, 0)
 groundMesh.position.set(0, 0, 0)
-//  物体接受阴影
+//  地面产生投影
+groundMesh.castShadow = false
+//  地面接受阴影
 groundMesh.receiveShadow = true
 
 //  设置地面
