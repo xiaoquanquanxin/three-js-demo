@@ -19,7 +19,7 @@ import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import './index.css'
-import { streetLampGroupPosition1, streetLampGroupPosition2, streetLampGroupPosition3, streetLightGroupPosition1 } from 'src/constants/material/streetLight'
+import { streetLampGroupPosition1, streetLampGroupPosition2, streetLightGroupPosition1, streetLightGroupPosition2 } from 'src/constants/material/streetLight'
 import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
@@ -53,7 +53,7 @@ setAxesHelper(scene)
 //  设置平行光
 setDirectionalLight(scene)
 //  设置环境光
-//  setAmbientLight(scene)
+setAmbientLight(scene)
 //  设置几何体 - 圆锥
 setGeometry(scene)
 //  设置地面
@@ -71,32 +71,32 @@ window.onload = () => {
 //  定时器
 const clock = new Clock()
 
+//  渲染
+function animate() {
+    const spt = clock.getDelta() * 1000
+    const frameValue = (1000 / spt) | 0
+    if (frameValue < 30) {
+        console.log(`%c帧率过低:${frameValue}`, 'color:red')
+    }
+    frameDiv.innerText = frameValue
+    requestAnimationFrame(animate)
+    //  2d渲染
+    css2DRenderer.render(scene, camera)
+    camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
+    renderer.setSize(window.innerWidth, window.innerHeight)
+    //  设置渲染器开启阴影
+    renderer.shadowMap.enabled = true
+    //  普通场景渲染
+    renderer.render(scene, camera)
+}
+
 function Index() {
     //  text标签
     const textRef = useRef(null)
-    const [frame, setFrame] = useState(0)
     const mainRef = useRef<HTMLDivElement | null>(null)
-    //  塔组
-    const [towerList, setTowerList] = useState<Array<Group>>([])
     //  初始化
     const [initKey] = useState('initKey')
     const initList = useDebouncedCallback(async () => {
-        //  渲染
-        function animate() {
-            const spt = clock.getDelta() * 1000
-            const frame = (1000 / spt) | 0
-            setFrame(frame)
-            requestAnimationFrame(animate)
-            //  2d渲染
-            css2DRenderer.render(scene, camera)
-            camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
-            renderer.setSize(window.innerWidth, window.innerHeight)
-            //  设置渲染器开启阴影
-            renderer.shadowMap.enabled = true
-            //  普通场景渲染
-            renderer.render(scene, camera)
-        }
-
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('只执行一次')
@@ -105,32 +105,41 @@ function Index() {
         const tower = await loadGltf('materialModels/tower/scene.gltf')
         console.log('加载素材 - 塔楼', tower)
         //  添加素材 到场景
-        addMaterialToScene(tower, scene, towerGroupPosition1, setTowerList)
-        addMaterialToScene(tower, scene, towerGroupPosition2, setTowerList)
-        addMaterialToScene(tower, scene, towerGroupPosition3, setTowerList)
-        addMaterialToScene(tower, scene, towerGroupPosition4, setTowerList)
-        addMaterialToScene(tower, scene, towerGroupPosition5, setTowerList)
-        addMaterialToScene(tower, scene, towerGroupPosition6, setTowerList)
+        addMaterialToScene(tower, scene, towerGroupPosition1)
+        addMaterialToScene(tower, scene, towerGroupPosition2)
+        addMaterialToScene(tower, scene, towerGroupPosition3)
+        addMaterialToScene(tower, scene, towerGroupPosition4)
+        addMaterialToScene(tower, scene, towerGroupPosition5)
+        addMaterialToScene(tower, scene, towerGroupPosition6)
 
         //  加载素材 - 中等的房子
         const mediumHouse = await loadGltf('materialModels/mediumHouse/scene.gltf')
         console.log('加载素材 - 中等的房子', mediumHouse)
         //  添加素材 到场景
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1, setTowerList)
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2, setTowerList)
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3, setTowerList)
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4, setTowerList)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3)
+        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4)
 
         //  加载素材 - 路灯
         const streetLight = await loadGltf('materialModels/streetlight/scene.gltf')
         streetLight.scene.rotation.set(0, -(1 / 4.5) * Math.PI, 0)
         console.log('加载素材 - 路灯', mediumHouse)
-        addMaterialToScene(streetLight, scene, streetLightGroupPosition1, setTowerList)
+        addMaterialToScene(streetLight, scene, streetLightGroupPosition1)
+        //  添加路灯灯泡的光源
+        streetLampGroupPosition1.forEach(item => {
+            setStreetLamp(scene, ...item)
+        })
 
-        //  添加光源
-        setStreetLamp(scene, ...streetLampGroupPosition1)
-        setStreetLamp(scene, ...streetLampGroupPosition2)
-        setStreetLamp(scene, ...streetLampGroupPosition3)
+        //  另一侧的路灯
+        const otherStreetLights = addMaterialToScene(streetLight, scene, streetLightGroupPosition2)
+        otherStreetLights.forEach(streetLight => {
+            streetLight.rotateY(1 * Math.PI)
+        })
+        //  添加路灯灯泡的光源
+        streetLampGroupPosition2.forEach(item => {
+            setStreetLamp(scene, ...item)
+        })
 
         //  文本标签
         const label = new CSS2DObject(textRef.current)
@@ -150,7 +159,7 @@ function Index() {
     const alarmClick = () => {}
     return (
         <div className="App">
-            <div className={'frame'}>帧率：{frame}</div>
+            <div className={'frameDiv'} id={'frameDiv'} />
             <div onClick={alarmClick} className={'alarm-button'}>
                 报警
             </div>

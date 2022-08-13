@@ -1,10 +1,12 @@
 //  房子的位置参数
 
 const basicSpace = 7
+//  基础x轴偏移
+const basicXStart = -5 + basicSpace * -3
 
 //  房子1
 const mediumHouseGroupPosition1: ParamsPositionInterType = {
-    xStart: basicSpace * -3,
+    xStart: basicXStart,
     xSpace: basicSpace,
     xCount: 3,
     yStart: 0,
@@ -17,7 +19,7 @@ const mediumHouseGroupPosition1: ParamsPositionInterType = {
 
 //  房子2
 const mediumHouseGroupPosition2: ParamsPositionInterType = {
-    xStart: basicSpace * -3,
+    xStart: basicXStart,
     xSpace: basicSpace,
     xCount: 3,
     yStart: 0,
@@ -29,7 +31,7 @@ const mediumHouseGroupPosition2: ParamsPositionInterType = {
 }
 //  房子3
 const mediumHouseGroupPosition3: ParamsPositionInterType = {
-    xStart: basicSpace * -3,
+    xStart: basicXStart,
     xSpace: basicSpace,
     xCount: 3,
     yStart: 0,
@@ -41,7 +43,7 @@ const mediumHouseGroupPosition3: ParamsPositionInterType = {
 }
 //  房子4
 const mediumHouseGroupPosition4: ParamsPositionInterType = {
-    xStart: basicSpace * -3,
+    xStart: basicXStart,
     xSpace: basicSpace,
     xCount: 3,
     yStart: 0,
