@@ -19,23 +19,34 @@ const loadGltf = async (url: string): Promise<GLTF> => {
         loader.load(url, resolve, undefined, reject)
     })
 
-    console.log('loadGltf--', gltf_origin)
-
+    // console.log('loadGltf--', gltf_origin);
     //  让model产生投影
     gltf_origin.scene.traverse(function (node) {
         if (node instanceof Mesh) {
-            console.log(node)
+            // console.log('Mesh', node);
+            // console.log('Mesh.material', node.material.color);
+            // console.log('Mesh.material', node.material.map);
+            // node.material.metalness = .5;
+            // node.material.roughness = .8
+
             //  产生投影
             node.castShadow = true
             //  接受投影
             node.receiveShadow = true
             //  FIX
-            node.geometry.computeVertexNormals()
+            // node.geometry.computeVertexNormals();
             //  模型自发光
-            return
+            node.material.color = {
+                b: 0.5,
+                g: 0.5,
+                isColor: true,
+                r: 0.5
+            }
+            // return;
             node.material.emissive = node.material.color
             node.material.emissiveMap = node.material.map
         }
+        node.geometry && node.geometry.computeVertexNormals()
     })
 
     //  添加到素材池

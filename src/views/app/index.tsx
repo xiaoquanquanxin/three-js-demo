@@ -2,7 +2,23 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
-import { Scene, Color, Group, Clock, Vector3, sRGBEncoding, SpotLight, SpotLightHelper, Object3D, CameraHelper, PCFShadowMap, PCFSoftShadowMap, WebGL1Renderer } from 'three'
+import {
+    Scene,
+    Color,
+    Group,
+    Clock,
+    Vector3,
+    sRGBEncoding,
+    SpotLight,
+    SpotLightHelper,
+    Object3D,
+    CameraHelper,
+    PCFShadowMap,
+    PCFSoftShadowMap,
+    WebGL1Renderer,
+    WebGLRenderer,
+    Texture
+} from 'three'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { useDebouncedCallback } from 'use-debounce'
@@ -30,7 +46,6 @@ const scene = new Scene()
 scene.background = new Color(0x111133)
 
 //  渲染器
-
 const renderer = new WebGL1Renderer({
     //  消除锯齿
     antialias: true,
@@ -63,7 +78,7 @@ setDirectionalLight(scene)
 //  【平面光】光源
 // areaLight
 //  设置环境光
-// setAmbientLight(scene);
+setAmbientLight(scene)
 //  设置几何体 - 圆锥
 setGeometry(scene)
 //  设置地面
@@ -148,6 +163,16 @@ function Index() {
         //  添加路灯灯泡的光源
         streetLampGroupPosition2.forEach(item => {
             setStreetLamp(scene, ...item)
+        })
+        //  加载素材 - 我的世界
+        const cubeHouseDemo = await loadGltf('materialModels/cubeHouseDemo/cubeHouseDemo.glb')
+        console.log('加载素材 - 我的世界', cubeHouseDemo)
+        console.log(cubeHouseDemo)
+        addMaterialToScene(cubeHouseDemo, scene, {
+            ...towerGroupPosition1,
+            xCount: 1,
+            zStart: -25,
+            yStart: 6
         })
 
         //  文本标签
