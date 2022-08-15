@@ -2,7 +2,7 @@
 const axesHelperPosition: PositionsType = [0, 0, 0]
 
 //  摄像机的初始位置
-const cameraPosition: PositionsType = [50, 30, 35]
+const cameraPosition: PositionsType = [60, 30, -20]
 //  摄像机的resize位置
 // const cameraResizePosition = [
 //   window.innerWidth,
