@@ -42,9 +42,20 @@ const loadGltf = async (url: string): Promise<GLTF> => {
                 isColor: true,
                 r: 0.5
             }
-            // return;
+            //  模型自发光
             node.material.emissive = node.material.color
             node.material.emissiveMap = node.material.map
+
+            // 启用透明
+            // node.material.transparent = true
+            // 透明度
+            // node.material.opacity = 0.5
+
+            // debugger
+            // 透明反射效果
+            // node.material.refractionRatio = 1
+            // node.material.metalness = 0
+            // node.material.roughness = 0
         }
         node.geometry && node.geometry.computeVertexNormals()
     })
