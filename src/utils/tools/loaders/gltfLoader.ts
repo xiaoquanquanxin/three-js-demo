@@ -25,23 +25,16 @@ const loadGltf = async (url: string): Promise<GLTF> => {
     gltf_origin.scene.traverse(function (node) {
         if (node instanceof Mesh) {
             console.log(node)
-
-            //  FIX
-            node.geometry.computeVertexNormals()
             //  产生投影
             node.castShadow = true
             //  接受投影
             node.receiveShadow = true
-            //  任何时候都渲染
-            // node.frustumCulled = false;
-            node.material.roughness = 1
-            node.material.shadowSide = DoubleSide
-            node.material.side = DoubleSide
+            //  FIX
+            node.geometry.computeVertexNormals()
             //  模型自发光
-            // return
+            return
             node.material.emissive = node.material.color
             node.material.emissiveMap = node.material.map
-            node.material.flatShading = false
         }
     })
 
