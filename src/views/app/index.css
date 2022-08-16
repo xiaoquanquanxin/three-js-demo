@@ -9,18 +9,6 @@
     line-height: 30px;
     width: 100px;
     top: 0;
-    left: 0;
-    text-align: center;
-}
-
-/*帧率*/
-.frameDiv {
-    position: absolute;
-    background-color: lightblue;
-    cursor: pointer;
-    line-height: 30px;
-    width: 100px;
-    top: 30px;
-    left: 0;
+    right: 0;
     text-align: center;
 }

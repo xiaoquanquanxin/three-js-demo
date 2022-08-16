@@ -31,6 +31,7 @@ import { loadGltf } from 'src/utils/tools/loaders/gltfLoader'
 import { setGeometry } from 'src/utils/convexGeometry/cylinderGeometry'
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
+import Stat from 'three/examples/jsm/libs/stats.module'
 import { setPointLight } from 'src/utils/tools/pointLight'
 import { css2DRenderer } from 'src/utils/tools/css2render'
 import { orbitControlsPosition } from 'src/constants/initConfig/positions'
@@ -39,6 +40,8 @@ import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupP
 import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
 import { setHemisphereLight } from 'src/utils/tools/hemisphereLight'
 import { streetLampGroupPosition1, streetLampGroupPosition2, streetLightGroupPosition1, streetLightGroupPosition2 } from 'src/constants/material/streetLight'
+import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls'
+import { randomFn } from 'src/utils/common'
 import './index.css'
 
 //  场景
@@ -62,10 +65,13 @@ renderer.shadowMap.enabled = true
 //  照摄像机
 const camera = getCamera()
 //  新建一个场景通道  为了覆盖到原理来的场景上
-// const renderPass = new RenderPass(scene, camera);
+const renderPass = new RenderPass(scene, camera)
 //  创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
-// const composer = new EffectComposer(renderer);
-// composer.addPass(renderPass);
+const composer = new EffectComposer(renderer)
+composer.addPass(renderPass)
+
+//  定时器
+const clock = new Clock()
 
 //  坐标轴
 setAxesHelper(scene)
@@ -80,37 +86,70 @@ setDirectionalLight(scene)
 //  设置环境光
 setAmbientLight(scene)
 //  设置几何体 - 圆锥
-setGeometry(scene)
+const cylinderGeometry = setGeometry(scene)
 //  设置地面
 setPlaneMesh(scene)
+//  第一人称控件
+let firstPersonControls = null
+//  2d渲染，文字
+let labelText: CSS2DObject = null
+
+//  中等大小的房子的素材数组
+let mediumHouseList: Array<Group> = []
+//  报警位置
+let alarmPosition: { x: number; y: number; z: number } = { x: 99999, y: 99999, z: 99999 }
+const stat = new Stat()
 
 window.onload = () => {
-    console.log('onload')
-    //  控制摄像机的位置
-    const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
-    //  摄像机看到的初始位置
-    orbitControls.target = new Vector3()
-    orbitControls.update()
-}
+    // console.log('onload');
+    window.document.body.appendChild(stat.domElement)
 
-//  定时器
-const clock = new Clock()
+    // //  第一人称控件
+    //   firstPersonControls = new FirstPersonControls(camera, document.getElementById('mainRef'));
+    // firstPersonControls.heightSpeed = .01;
+    // firstPersonControls.movementSpeed = .1;
+    // firstPersonControls.lookSpeed = 0.001;
+    // firstPersonControls.lookVertical = true;
+    // firstPersonControls.constrainVertical = true;
+    // firstPersonControls.verticalMax = 2;
+    // firstPersonControls.verticalMin = 1;
+    // firstPersonControls.mouseDragOn = true;
+    // firstPersonControls.autoForward = false;
+    // firstPersonControls.update(1)
+}
 
 //  渲染
 function animate() {
+    //  距离上一次的时间
     const spt = clock.getDelta() * 1000
-    const frameValue = (1000 / spt) | 0
-    if (frameValue < 30) {
-        console.log(`%c帧率过低:${frameValue}`, 'color:red')
-    }
-    frameDiv.innerText = frameValue
+    //  经过的时间
+    const spd = clock.getElapsedTime()
+    ;(() => {
+        //  移动圆锥
+        const { x, z } = alarmPosition
+        const y = Math.cos(spd * 4)
+        cylinderGeometry.position.set(x, y + 10, z)
+
+        //  2d渲染，文字
+        if (labelText) {
+            labelText.position.set(x, y + 12, z)
+        }
+    })()
     requestAnimationFrame(animate)
-    //  2d渲染
-    css2DRenderer.render(scene, camera)
+    //  重置摄像头
     camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
     renderer.setSize(window.innerWidth, window.innerHeight)
     //  普通场景渲染
     renderer.render(scene, camera)
+    css2DRenderer.setSize(window.innerWidth, window.innerHeight)
+    //  渲染2d文字场景
+    css2DRenderer.render(scene, camera)
+
+    //  帧率监测
+    stat.update()
+    // if (firstPersonControls) {
+    //     firstPersonControls.update(1)
+    // }
 }
 
 function Index() {
@@ -120,11 +159,15 @@ function Index() {
     //  初始化
     const [initKey] = useState('initKey')
     const initList = useDebouncedCallback(async () => {
+        //  控制摄像机的位置
+        const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
+        //  摄像机看到的初始位置
+        orbitControls.target = new Vector3()
+        orbitControls.update()
+
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('%c只执行一次', 'color:green;')
-        //  渲染
-        animate()
         //  加载素材 - 塔楼
         const tower = await loadGltf('materialModels/tower/scene.gltf')
         console.log('加载素材 - 塔楼', tower)
@@ -135,15 +178,16 @@ function Index() {
         addMaterialToScene(tower, scene, towerGroupPosition4)
         addMaterialToScene(tower, scene, towerGroupPosition5)
         addMaterialToScene(tower, scene, towerGroupPosition6)
+        console.log('mediumHouseList', mediumHouseList)
 
         //  加载素材 - 中等的房子
         const mediumHouse = await loadGltf('materialModels/mediumHouse/scene.gltf')
         console.log('加载素材 - 中等的房子', mediumHouse)
         //  添加素材 到场景
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1)
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2)
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3)
-        addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4)
+        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1))
+        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2))
+        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3))
+        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4))
 
         //  加载素材 - 路灯
         const streetLight = await loadGltf('materialModels/streetlight/scene.gltf')
@@ -176,9 +220,12 @@ function Index() {
         })
 
         //  文本标签
-        const label = new CSS2DObject(textRef.current)
-        label.position.set(-10, 10, -10)
-        scene.add(label)
+        labelText = new CSS2DObject(textRef.current)
+        labelText.position.set(-10, 10, -10)
+        scene.add(labelText)
+
+        //  渲染
+        animate()
 
         return () => {}
     }, 0)
@@ -187,14 +234,17 @@ function Index() {
     }, [initKey, initList])
 
     //  报警
-    const alarmClick = () => {}
+    const alarmClick = () => {
+        const alarmIndex = randomFn(0, mediumHouseList.length - 1) | 0
+        console.log(mediumHouseList[alarmIndex].position)
+        Object.assign(alarmPosition, mediumHouseList[alarmIndex].position)
+    }
     return (
         <div className="App">
-            <div className={'frameDiv'} id={'frameDiv'} />
             <div onClick={alarmClick} className={'alarm-button'}>
                 报警
             </div>
-            <Text text={'我是权鑫'} childRef={textRef} />
+            <Text text={'报警！！'} childRef={textRef} />
             <div ref={mainRef} id="mainRef" />
         </div>
     )
