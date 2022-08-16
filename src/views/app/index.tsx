@@ -1,4 +1,5 @@
 //  @ts-nocheck
+import Stat from 'three/examples/jsm/libs/stats.module'
 import React, { useEffect, useRef, useState } from 'react'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer'
@@ -28,13 +29,10 @@ import { setDirectionalLight } from 'src/utils/tools/directionalLight'
 import { setAmbientLight } from 'src/utils/tools/ambientLight'
 import { Text } from 'src/components/text'
 import { loadGltf } from 'src/utils/tools/loaders/gltfLoader'
-import { setGeometry } from 'src/utils/convexGeometry/cylinderGeometry'
+import { alarmGroupAnimate, setAlarmGroup } from 'src/utils/convexGeometry/cylinderGeometry'
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
-import Stat from 'three/examples/jsm/libs/stats.module'
-import { setPointLight } from 'src/utils/tools/pointLight'
 import { css2DRenderer } from 'src/utils/tools/css2render'
-import { orbitControlsPosition } from 'src/constants/initConfig/positions'
 import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
@@ -86,7 +84,7 @@ setDirectionalLight(scene)
 //  设置环境光
 setAmbientLight(scene)
 //  设置几何体 - 圆锥
-const cylinderGeometry = setGeometry(scene)
+const alarmGroup = setAlarmGroup(scene)
 //  设置地面
 setPlaneMesh(scene)
 //  第一人称控件
@@ -121,18 +119,18 @@ window.onload = () => {
 //  渲染
 function animate() {
     //  距离上一次的时间
-    const spt = clock.getDelta() * 1000
+    // const spt = clock.getDelta() * 1000;
     //  经过的时间
     const spd = clock.getElapsedTime()
     ;(() => {
         //  移动圆锥
         const { x, z } = alarmPosition
-        const y = Math.cos(spd * 4)
-        cylinderGeometry.position.set(x, y + 10, z)
-
+        const groupY = 9
+        //  报警组动画
+        alarmGroupAnimate(spd, x, groupY, z)
         //  2d渲染，文字
         if (labelText) {
-            labelText.position.set(x, y + 12, z)
+            labelText.position.set(x, groupY + Math.cos(spd * 4) + 2 + 3, z)
         }
     })()
     requestAnimationFrame(animate)
@@ -162,9 +160,8 @@ function Index() {
         //  控制摄像机的位置
         const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
         //  摄像机看到的初始位置
-        orbitControls.target = new Vector3()
+        orbitControls.target = new Vector3(-10, 0, -20)
         orbitControls.update()
-
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('%c只执行一次', 'color:green;')
@@ -236,8 +233,10 @@ function Index() {
     //  报警
     const alarmClick = () => {
         const alarmIndex = randomFn(0, mediumHouseList.length - 1) | 0
-        console.log(mediumHouseList[alarmIndex].position)
+        // console.log(mediumHouseList[alarmIndex].position)
+        //  赋值
         Object.assign(alarmPosition, mediumHouseList[alarmIndex].position)
+        console.log('报警的位置', alarmPosition)
     }
     return (
         <div className="App">
