@@ -33,7 +33,7 @@ import { alarmGroupAnimate, setAlarmGroup } from 'src/utils/convexGeometry/cylin
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
 import { css2DRenderer } from 'src/utils/tools/css2render'
-import { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
+import { mytowerGroupPosition, towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
 import { setHemisphereLight } from 'src/utils/tools/hemisphereLight'
@@ -41,6 +41,7 @@ import { streetLampGroupPosition1, streetLampGroupPosition2, streetLightGroupPos
 import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonControls'
 import { randomFn } from 'src/utils/common'
 import './index.css'
+import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 //  场景
 const scene = new Scene()
@@ -103,17 +104,17 @@ window.onload = () => {
     window.document.body.appendChild(stat.domElement)
 
     // //  第一人称控件
-    //   firstPersonControls = new FirstPersonControls(camera, document.getElementById('mainRef'));
-    // firstPersonControls.heightSpeed = .01;
-    // firstPersonControls.movementSpeed = .1;
-    // firstPersonControls.lookSpeed = 0.001;
-    // firstPersonControls.lookVertical = true;
-    // firstPersonControls.constrainVertical = true;
-    // firstPersonControls.verticalMax = 2;
-    // firstPersonControls.verticalMin = 1;
-    // firstPersonControls.mouseDragOn = true;
-    // firstPersonControls.autoForward = false;
-    // firstPersonControls.update(1)
+      firstPersonControls = new FirstPersonControls(camera, document.getElementById('mainRef'));
+    firstPersonControls.heightSpeed = .01;
+    firstPersonControls.movementSpeed = .1;
+    firstPersonControls.lookSpeed = 0.001;
+    firstPersonControls.lookVertical = true;
+    firstPersonControls.constrainVertical = true;
+    firstPersonControls.verticalMax = 2;
+    firstPersonControls.verticalMin = 1;
+    firstPersonControls.mouseDragOn = true;
+    firstPersonControls.autoForward = false;
+    firstPersonControls.update(1)
 }
 
 //  渲染
@@ -135,7 +136,7 @@ function animate() {
     })()
     requestAnimationFrame(animate)
     //  重置摄像头
-    camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
+    // camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
     renderer.setSize(window.innerWidth, window.innerHeight)
     //  普通场景渲染
     renderer.render(scene, camera)
@@ -167,54 +168,58 @@ function Index() {
         console.log('%c只执行一次', 'color:green;')
         //  加载素材 - 塔楼
         const tower = await loadGltf('materialModels/tower/scene.gltf')
-        console.log('加载素材 - 塔楼', tower)
+        const myTower = await loadGltf('materialModels/test.gltf')
+
+    
+        console.log('加载素材 - 塔楼', myTower)
         //  添加素材 到场景
-        addMaterialToScene(tower, scene, towerGroupPosition1)
-        addMaterialToScene(tower, scene, towerGroupPosition2)
-        addMaterialToScene(tower, scene, towerGroupPosition3)
-        addMaterialToScene(tower, scene, towerGroupPosition4)
-        addMaterialToScene(tower, scene, towerGroupPosition5)
-        addMaterialToScene(tower, scene, towerGroupPosition6)
-        console.log('mediumHouseList', mediumHouseList)
+        addMaterialToScene(myTower, scene, mytowerGroupPosition)
+        // addMaterialToScene(tower, scene, towerGroupPosition1)
+        // addMaterialToScene(tower, scene, towerGroupPosition2)
+        // addMaterialToScene(tower, scene, towerGroupPosition3)
+        // addMaterialToScene(tower, scene, towerGroupPosition4)
+        // addMaterialToScene(tower, scene, towerGroupPosition5)
+        // addMaterialToScene(tower, scene, towerGroupPosition6)
+        // console.log('mediumHouseList', mediumHouseList)
 
         //  加载素材 - 中等的房子
-        const mediumHouse = await loadGltf('materialModels/mediumHouse/scene.gltf')
-        console.log('加载素材 - 中等的房子', mediumHouse)
+        // const mediumHouse = await loadGltf('materialModels/mediumHouse/scene.gltf')
+        // console.log('加载素材 - 中等的房子', mediumHouse)
         //  添加素材 到场景
-        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1))
-        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2))
-        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3))
-        mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4))
+        // mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition1))
+        // mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition2))
+        // mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition3))
+        // mediumHouseList.push(...addMaterialToScene(mediumHouse, scene, mediumHouseGroupPosition4))
 
-        //  加载素材 - 路灯
-        const streetLight = await loadGltf('materialModels/streetlight/scene.gltf')
-        streetLight.scene.rotation.set(0, -(1 / 4.5) * Math.PI, 0)
-        console.log('加载素材 - 路灯', mediumHouse)
-        addMaterialToScene(streetLight, scene, streetLightGroupPosition1)
-        //  添加路灯灯泡的光源
-        streetLampGroupPosition1.forEach(item => {
-            setStreetLamp(scene, ...item)
-        })
+        // //  加载素材 - 路灯
+        // const streetLight = await loadGltf('materialModels/streetlight/scene.gltf')
+        // streetLight.scene.rotation.set(0, -(1 / 4.5) * Math.PI, 0)
+        // // console.log('加载素材 - 路灯', mediumHouse)
+        // addMaterialToScene(streetLight, scene, streetLightGroupPosition1)
+        // //  添加路灯灯泡的光源
+        // streetLampGroupPosition1.forEach(item => {
+        //     setStreetLamp(scene, ...item)
+        // })
 
-        //  另一侧的路灯
-        const otherStreetLights = addMaterialToScene(streetLight, scene, streetLightGroupPosition2)
-        otherStreetLights.forEach(streetLight => {
-            streetLight.rotateY(1 * Math.PI)
-        })
+        // //  另一侧的路灯
+        // const otherStreetLights = addMaterialToScene(streetLight, scene, streetLightGroupPosition2)
+        // otherStreetLights.forEach(streetLight => {
+        //     streetLight.rotateY(1 * Math.PI)
+        // })
         //  添加路灯灯泡的光源
-        streetLampGroupPosition2.forEach(item => {
-            setStreetLamp(scene, ...item)
-        })
-        //  加载素材 - 我的世界
-        const cubeHouseDemo = await loadGltf('materialModels/cubeHouseDemo/cubeHouseDemo.glb')
-        console.log('加载素材 - 我的世界', cubeHouseDemo)
-        console.log(cubeHouseDemo)
-        addMaterialToScene(cubeHouseDemo, scene, {
-            ...towerGroupPosition1,
-            xCount: 1,
-            zStart: -25,
-            yStart: 6
-        })
+        // streetLampGroupPosition2.forEach(item => {
+        //     setStreetLamp(scene, ...item)
+        // })
+        // //  加载素材 - 我的世界
+        // const cubeHouseDemo = await loadGltf('materialModels/cubeHouseDemo/cubeHouseDemo.glb')
+        // console.log('加载素材 - 我的世界', cubeHouseDemo)
+        // console.log(cubeHouseDemo)
+        // addMaterialToScene(cubeHouseDemo, scene, {
+        //     ...towerGroupPosition1,
+        //     xCount: 1,
+        //     zStart: -25,
+        //     yStart: 6
+        // })
 
         //  文本标签
         labelText = new CSS2DObject(textRef.current)

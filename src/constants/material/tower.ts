@@ -76,4 +76,15 @@ const towerGroupPosition6: ParamsPositionInterType = {
     zCount: 1
 }
 
+export const mytowerGroupPosition: ParamsPositionInterType = {
+    xStart: basicXStart + basicSpace * 4 + basicSpace,
+    xSpace: basicSpace,
+    xCount: 1,
+    yStart: 0,
+    ySpace: 0,
+    yCount: 1,
+    zStart: -1 * (basicSpace * 1.5),
+    zSpace: basicSpace,
+    zCount: 1
+}
 export { towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 }
