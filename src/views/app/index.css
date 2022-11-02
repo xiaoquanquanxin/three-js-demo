@@ -1,0 +1,14 @@
+.App {
+    position: relative;
+}
+
+.alarm-button {
+    position: absolute;
+    background-color: lightblue;
+    cursor: pointer;
+    line-height: 30px;
+    width: 100px;
+    top: 0;
+    right: 0;
+    text-align: center;
+}
