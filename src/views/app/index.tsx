@@ -103,7 +103,7 @@ window.onload = () => {
     // console.log('onload');
     window.document.body.appendChild(stat.domElement)
 
-    // //  第一人称控件
+    //  第一人称控件
       firstPersonControls = new FirstPersonControls(camera, document.getElementById('mainRef'));
     firstPersonControls.heightSpeed = .01;
     firstPersonControls.movementSpeed = .1;
@@ -161,7 +161,8 @@ function Index() {
         //  控制摄像机的位置
         const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
         //  摄像机看到的初始位置
-        orbitControls.target = new Vector3(-10, 0, -20)
+        // debugger;
+        orbitControls.target = new Vector3(0,0,0)
         orbitControls.update()
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
@@ -170,7 +171,7 @@ function Index() {
         const tower = await loadGltf('materialModels/tower/scene.gltf')
         const myTower = await loadGltf('materialModels/test.gltf')
 
-    
+
         console.log('加载素材 - 塔楼', myTower)
         //  添加素材 到场景
         addMaterialToScene(myTower, scene, mytowerGroupPosition)

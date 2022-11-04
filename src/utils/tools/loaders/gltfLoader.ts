@@ -34,7 +34,7 @@ const loadGltf = async (url: string): Promise<GLTF> => {
             //  接受投影
             node.receiveShadow = true
             //  FIX
-            node.geometry.computeVertexNormals()
+            // node.geometry.computeVertexNormals()
             return
             //  模型自发光
             node.material.color = {
