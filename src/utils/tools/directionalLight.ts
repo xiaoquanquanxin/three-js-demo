@@ -9,7 +9,7 @@ directionalLight.castShadow = true
 directionalLight.shadow.camera.near = 1
 directionalLight.shadow.camera.far = 2000
 
-const d = 50
+const d = 0
 directionalLight.shadow.camera.left = -d
 directionalLight.shadow.camera.right = d
 directionalLight.shadow.camera.top = d

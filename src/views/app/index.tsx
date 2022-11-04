@@ -18,7 +18,9 @@ import {
     PCFSoftShadowMap,
     WebGL1Renderer,
     WebGLRenderer,
-    Texture
+    Texture,
+    EdgesGeometry,
+    Vector2
 } from 'three'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -33,7 +35,15 @@ import { alarmGroupAnimate, setAlarmGroup } from 'src/utils/convexGeometry/cylin
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { setPlaneMesh } from 'src/utils/convexGeometry/ground'
 import { css2DRenderer } from 'src/utils/tools/css2render'
-import { mytowerGroupPosition, towerGroupPosition1, towerGroupPosition2, towerGroupPosition3, towerGroupPosition4, towerGroupPosition5, towerGroupPosition6 } from 'src/constants/material/tower'
+import {
+    mytowerGroupPosition,
+    towerGroupPosition1,
+    towerGroupPosition2,
+    towerGroupPosition3,
+    towerGroupPosition4,
+    towerGroupPosition5,
+    towerGroupPosition6
+} from 'src/constants/material/tower'
 import { mediumHouseGroupPosition1, mediumHouseGroupPosition2, mediumHouseGroupPosition3, mediumHouseGroupPosition4 } from 'src/constants/material/mediumHouse'
 import { setStreetLamp } from 'src/utils/tools/lights/spotLight/streetLamp'
 import { setHemisphereLight } from 'src/utils/tools/hemisphereLight'
@@ -42,6 +52,10 @@ import { FirstPersonControls } from 'three/examples/jsm/controls/FirstPersonCont
 import { randomFn } from 'src/utils/common'
 import './index.css'
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { loadObj } from 'src/utils/tools/loaders/objLoader'
+import { getBokehPass } from 'src/utils/tools/depthOfField'
+import { getBloomPass } from 'src/utils/tools/bloomPass'
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
 
 //  场景
 const scene = new Scene()
@@ -68,6 +82,19 @@ const renderPass = new RenderPass(scene, camera)
 //  创建一个EffectComposer（效果组合器）对象，然后在该对象上添加后期处理通道。
 const composer = new EffectComposer(renderer)
 composer.addPass(renderPass)
+
+//  加入辉光
+const bloomPass = getBloomPass()
+composer.addPass(bloomPass)
+
+//  加入景深
+const bokehPass = getBokehPass(scene, camera)
+bokehPass.needsSwap = true
+composer.addPass(bokehPass)
+
+//  轮廓通道
+const outlinePass = new OutlinePass(new Vector2(window.innerWidth / 2, window.innerHeight / 2), scene, camera)
+composer.addPass(outlinePass)
 
 //  定时器
 const clock = new Clock()
@@ -104,16 +131,16 @@ window.onload = () => {
     window.document.body.appendChild(stat.domElement)
 
     //  第一人称控件
-      firstPersonControls = new FirstPersonControls(camera, document.getElementById('mainRef'));
-    firstPersonControls.heightSpeed = .01;
-    firstPersonControls.movementSpeed = .1;
-    firstPersonControls.lookSpeed = 0.001;
-    firstPersonControls.lookVertical = true;
-    firstPersonControls.constrainVertical = true;
-    firstPersonControls.verticalMax = 2;
-    firstPersonControls.verticalMin = 1;
-    firstPersonControls.mouseDragOn = true;
-    firstPersonControls.autoForward = false;
+    firstPersonControls = new FirstPersonControls(camera, document.getElementById('mainRef'))
+    firstPersonControls.heightSpeed = 0.01
+    firstPersonControls.movementSpeed = 0.1
+    firstPersonControls.lookSpeed = 0.001
+    firstPersonControls.lookVertical = true
+    firstPersonControls.constrainVertical = true
+    firstPersonControls.verticalMax = 2
+    firstPersonControls.verticalMin = 1
+    firstPersonControls.mouseDragOn = true
+    firstPersonControls.autoForward = false
     firstPersonControls.update(1)
 }
 
@@ -138,6 +165,22 @@ function animate() {
     //  重置摄像头
     // camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
     renderer.setSize(window.innerWidth, window.innerHeight)
+
+    const effectController = {
+        focus: 100,
+        aperture: 5,
+        maxblur: 0.4
+    }
+    bokehPass.uniforms['focus'].value = effectController.focus
+    bokehPass.uniforms['aperture'].value = effectController.aperture * 0.00001
+    bokehPass.uniforms['maxblur'].value = effectController.maxblur
+
+    outlinePass.visibleEdgeColor.set('#3042fc')
+    outlinePass.edgeStrength = 4
+    outlinePass.edgeGlow = 0
+    outlinePass.edgeThickness = 1.6
+    outlinePass.pulsePeriod = 0
+
     //  普通场景渲染
     renderer.render(scene, camera)
     css2DRenderer.setSize(window.innerWidth, window.innerHeight)
@@ -162,17 +205,26 @@ function Index() {
         const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
         //  摄像机看到的初始位置
         // debugger;
-        orbitControls.target = new Vector3(0,0,0)
+        orbitControls.target = new Vector3(0, 0, 0)
         orbitControls.update()
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('%c只执行一次', 'color:green;')
         //  加载素材 - 塔楼
-        const tower = await loadGltf('materialModels/tower/scene.gltf')
-        const myTower = await loadGltf('materialModels/test.gltf')
+        // const tower = await loadGltf('materialModels/tower/scene.gltf')
+        // const myTower = await loadGltf('materialModels/tower/scene.gltf')
+        // const myTower = await loadGltf('materialModels/cubeHouseDemo/cubeHouseDemo.glb')
+        const myTower = await loadGltf('materialModels/111.glb')
+        // const myTower = await loadGltf('materialModels/Final 2(1).gltf')
 
-
-        console.log('加载素材 - 塔楼', myTower)
+        // console.log('加载素材 - 塔楼', myTower)
+        // console.log('加载素材 - quan', quan)
+        // quan.scene.children.length = 1;
+        // quan.parser.sourceCache=myTower.parser.sourceCache
+        // quan.parser.textureCache=myTower.parser.textureCache
+        // quan.parser.json=myTower.parser.json;
+        // console.log(myTower.parser.json,quan.parser.json)
+        console.log(myTower)
         //  添加素材 到场景
         addMaterialToScene(myTower, scene, mytowerGroupPosition)
         // addMaterialToScene(tower, scene, towerGroupPosition1)

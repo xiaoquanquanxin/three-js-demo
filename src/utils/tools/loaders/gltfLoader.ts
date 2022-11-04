@@ -2,7 +2,8 @@
 
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { addToMaterialPool, getFromMaterialPool } from 'src/utils/tools/material/materialPool'
-import { DoubleSide, Mesh } from 'three'
+import { DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, Vector2 } from 'three'
+import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
 
 //  添加素材
 const loader = new GLTFLoader()
@@ -24,10 +25,25 @@ const loadGltf = async (url: string): Promise<GLTF> => {
     gltf_origin.scene.traverse(function (node) {
         if (node instanceof Mesh) {
             // console.log('Mesh', node);
+            // console.clear();
+            // console.log('material',node.material);
+            // node.material.alphaTest = .9
+            // node.material.depthWrite = false;
+            node.material.transparent = true
+            node.material.opacity = 0.8
             // console.log('Mesh.material', node.material.color);
             // console.log('Mesh.material', node.material.map);
             // node.material.metalness = .5;
             // node.material.roughness = .8
+            console.clear()
+            const cubeEdges = new EdgesGeometry(node.geometry)
+
+            const edgesMtl = new LineBasicMaterial({ color: 0xffffff, intensity: 100 })
+            const cubeLine = new LineSegments(cubeEdges, edgesMtl)
+            console.log(node)
+            console.log(cubeEdges)
+            console.log(cubeLine)
+            node.add(cubeLine)
 
             //  产生投影
             node.castShadow = true
