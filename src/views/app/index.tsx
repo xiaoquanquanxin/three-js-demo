@@ -20,7 +20,8 @@ import {
     WebGLRenderer,
     Texture,
     EdgesGeometry,
-    Vector2
+    Vector2,
+    Raycaster
 } from 'three'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
@@ -56,19 +57,22 @@ import { loadObj } from 'src/utils/tools/loaders/objLoader'
 import { getBokehPass } from 'src/utils/tools/depthOfField'
 import { getBloomPass } from 'src/utils/tools/bloomPass'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
+import { getPoints } from 'src/utils/tools/loadPoints'
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
 
 //  场景
 const scene = new Scene()
 scene.background = new Color(0x111133)
 
 //  渲染器
-const renderer = new WebGL1Renderer({
-    //  消除锯齿
+const renderer = new WebGLRenderer({
+    //抗锯齿
     antialias: true,
-    alpha: true
+    alpha: false
 })
 //  防止输出模糊
 renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setSize(window.innerWidth, window.innerHeight)
 //  渲染细节
 renderer.outputEncoding = sRGBEncoding
 renderer.shadowMap.type = PCFShadowMap
@@ -84,17 +88,12 @@ const composer = new EffectComposer(renderer)
 composer.addPass(renderPass)
 
 //  加入辉光
-const bloomPass = getBloomPass()
-composer.addPass(bloomPass)
+// const bloomPass = getBloomPass()
+// composer.addPass(bloomPass)
 
 //  加入景深
 const bokehPass = getBokehPass(scene, camera)
-bokehPass.needsSwap = true
 composer.addPass(bokehPass)
-
-//  轮廓通道
-const outlinePass = new OutlinePass(new Vector2(window.innerWidth / 2, window.innerHeight / 2), scene, camera)
-composer.addPass(outlinePass)
 
 //  定时器
 const clock = new Clock()
@@ -108,11 +107,11 @@ setDirectionalLight(scene)
 //  设置半球光
 // setHemisphereLight(scene);
 //  【平面光】光源
-// areaLight
+
 //  设置环境光
 setAmbientLight(scene)
 //  设置几何体 - 圆锥
-const alarmGroup = setAlarmGroup(scene)
+// const alarmGroup = setAlarmGroup(scene)
 //  设置地面
 setPlaneMesh(scene)
 //  第一人称控件
@@ -125,6 +124,10 @@ let mediumHouseList: Array<Group> = []
 //  报警位置
 let alarmPosition: { x: number; y: number; z: number } = { x: 99999, y: 99999, z: 99999 }
 const stat = new Stat()
+
+//  星光
+// const points = getPoints();
+// scene.add(points);
 
 window.onload = () => {
     // console.log('onload');
@@ -166,20 +169,11 @@ function animate() {
     // camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
     renderer.setSize(window.innerWidth, window.innerHeight)
 
-    const effectController = {
-        focus: 100,
-        aperture: 5,
-        maxblur: 0.4
-    }
-    bokehPass.uniforms['focus'].value = effectController.focus
-    bokehPass.uniforms['aperture'].value = effectController.aperture * 0.00001
-    bokehPass.uniforms['maxblur'].value = effectController.maxblur
-
-    outlinePass.visibleEdgeColor.set('#3042fc')
-    outlinePass.edgeStrength = 4
-    outlinePass.edgeGlow = 0
-    outlinePass.edgeThickness = 1.6
-    outlinePass.pulsePeriod = 0
+    // outlinePass.visibleEdgeColor.set('#3042fc')
+    // outlinePass.edgeStrength = 4
+    // outlinePass.edgeGlow = 0
+    // outlinePass.edgeThickness = 1.6
+    // outlinePass.pulsePeriod = 0
 
     //  普通场景渲染
     renderer.render(scene, camera)
@@ -192,6 +186,9 @@ function animate() {
     // if (firstPersonControls) {
     //     firstPersonControls.update(1)
     // }
+
+    camera.lookAt(scene.position)
+    composer.render(0.1)
 }
 
 function Index() {
@@ -211,20 +208,10 @@ function Index() {
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
         console.log('%c只执行一次', 'color:green;')
         //  加载素材 - 塔楼
-        // const tower = await loadGltf('materialModels/tower/scene.gltf')
-        // const myTower = await loadGltf('materialModels/tower/scene.gltf')
-        // const myTower = await loadGltf('materialModels/cubeHouseDemo/cubeHouseDemo.glb')
-        const myTower = await loadGltf('materialModels/111.glb')
-        // const myTower = await loadGltf('materialModels/Final 2(1).gltf')
 
-        // console.log('加载素材 - 塔楼', myTower)
-        // console.log('加载素材 - quan', quan)
-        // quan.scene.children.length = 1;
-        // quan.parser.sourceCache=myTower.parser.sourceCache
-        // quan.parser.textureCache=myTower.parser.textureCache
-        // quan.parser.json=myTower.parser.json;
-        // console.log(myTower.parser.json,quan.parser.json)
-        console.log(myTower)
+        const myTower = await loadGltf('materialModels/111.glb')
+        console.log('myTower.scene.children', myTower.scene.children[3].material)
+
         //  添加素材 到场景
         addMaterialToScene(myTower, scene, mytowerGroupPosition)
         // addMaterialToScene(tower, scene, towerGroupPosition1)

@@ -2,8 +2,10 @@
 
 import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { addToMaterialPool, getFromMaterialPool } from 'src/utils/tools/material/materialPool'
-import { DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, Vector2 } from 'three'
+import { AdditiveBlending, DoubleSide, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshLambertMaterial, Vector2 } from 'three'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
+import { Material } from 'three/src/materials/Material'
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial'
 
 //  添加素材
 const loader = new GLTFLoader()
@@ -24,57 +26,40 @@ const loadGltf = async (url: string): Promise<GLTF> => {
     //  让model产生投影
     gltf_origin.scene.traverse(function (node) {
         if (node instanceof Mesh) {
-            // console.log('Mesh', node);
-            // console.clear();
-            // console.log('material',node.material);
-            // node.material.alphaTest = .9
-            // node.material.depthWrite = false;
-            node.material.transparent = true
-            node.material.opacity = 0.8
-            // console.log('Mesh.material', node.material.color);
-            // console.log('Mesh.material', node.material.map);
-            // node.material.metalness = .5;
-            // node.material.roughness = .8
-            console.clear()
-            const cubeEdges = new EdgesGeometry(node.geometry)
+            // console.log(node);ta
+            // console.log(node.material);
+            const material: Material = new MeshLambertMaterial({
+                color: 'rgba(128,128,128,0.3)',
+                emissive: 'rgba(21,24,217,0.3)',
+                emissiveIntensity: 0.7
+            })
+            //  不透明度
+            material.transparent = true
+            material.opacity = 0.8
+            //  赋值
+            node.material = material
 
-            const edgesMtl = new LineBasicMaterial({ color: 0xffffff, intensity: 100 })
+            const cubeEdges = new EdgesGeometry(node.geometry)
+            // const edgesMtl = new LineBasicMaterial({
+            //     linewidth: 32,
+            //     color: 0x00ff00
+            // })
+            const edgesMtl = new MeshBasicMaterial({
+                linewidth: 32,
+                color: 0x00ff00
+            })
             const cubeLine = new LineSegments(cubeEdges, edgesMtl)
-            console.log(node)
-            console.log(cubeEdges)
-            console.log(cubeLine)
-            node.add(cubeLine)
+            // console.log(cubeEdges)
+            // console.log(cubeLine)
+            // node.add(cubeLine);
 
             //  产生投影
             node.castShadow = true
             //  接受投影
             node.receiveShadow = true
             //  FIX
-            // node.geometry.computeVertexNormals()
-            return
-            //  模型自发光
-            node.material.color = {
-                b: 0.5,
-                g: 0.5,
-                isColor: true,
-                r: 0.5
-            }
-            //  模型自发光
-            node.material.emissive = node.material.color
-            node.material.emissiveMap = node.material.map
-
-            // 启用透明
-            // node.material.transparent = true
-            // 透明度
-            // node.material.opacity = 0.5
-
-            // debugger
-            // 透明反射效果
-            // node.material.refractionRatio = 1
-            // node.material.metalness = 0
-            // node.material.roughness = 0
+            node.geometry.computeVertexNormals()
         }
-        // node.geometry && node.geometry.computeVertexNormals()
     })
 
     //  添加到素材池
