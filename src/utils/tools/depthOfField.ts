@@ -6,9 +6,9 @@ import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 
 // 创建景深参数
 const effectController = {
-    focus: 30.0,
-    aperture: 0.00005,
-    maxblur: 0.1,
+    focus: 0.0,
+    aperture: 0,
+    maxblur: 0,
     width: window.innerWidth,
     height: window.innerHeight
 }
@@ -26,7 +26,7 @@ const getBokehPass = (scene: Scene, camera: Camera): BokehPass => {
     const gui = new GUI()
     gui.add(effectController, 'focus', -100.0, 100.0, 1).onChange(matChanger)
     gui.add(effectController, 'aperture', 0, 0.0001, 0.000001).onChange(matChanger)
-    gui.add(effectController, 'maxblur', 0.0, 5, 0.01).onChange(matChanger)
+    gui.add(effectController, 'maxblur', 0.0, 0.01, 0.001).onChange(matChanger)
     gui.close()
 
     matChanger()

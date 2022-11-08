@@ -13,7 +13,7 @@ const camera = new PerspectiveCamera(
     1000
 )
 //  摄像机的位置
-camera.position.set(-45, 20, 10)
+camera.position.set(10, 10, 100)
 //  看的位置，这是不起作用的，因为使用了 orbitControls [https://blog.csdn.net/WoZhiMoMing/article/details/114629008]
 // camera.lookAt(new Vector3(0,0,0));
 
