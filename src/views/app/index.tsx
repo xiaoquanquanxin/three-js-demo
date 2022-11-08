@@ -59,6 +59,7 @@ import { getBloomPass } from 'src/utils/tools/bloomPass'
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass'
 import { getPoints } from 'src/utils/tools/loadPoints'
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass'
+import { SobelOperatorShader } from 'three/examples/jsm/shaders/SobelOperatorShader'
 
 //  场景
 const scene = new Scene()
@@ -126,8 +127,8 @@ let alarmPosition: { x: number; y: number; z: number } = { x: 99999, y: 99999, z
 const stat = new Stat()
 
 //  星光
-// const points = getPoints();
-// scene.add(points);
+// const points = getPoints()
+// scene.add(points)
 
 window.onload = () => {
     // console.log('onload');
@@ -166,14 +167,8 @@ function animate() {
     })()
     requestAnimationFrame(animate)
     //  重置摄像头
-    // camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
+    camera.setViewOffset(window.innerWidth, window.innerHeight, 0, 0, window.innerWidth, window.innerHeight)
     renderer.setSize(window.innerWidth, window.innerHeight)
-
-    // outlinePass.visibleEdgeColor.set('#3042fc')
-    // outlinePass.edgeStrength = 4
-    // outlinePass.edgeGlow = 0
-    // outlinePass.edgeThickness = 1.6
-    // outlinePass.pulsePeriod = 0
 
     //  普通场景渲染
     renderer.render(scene, camera)
@@ -183,9 +178,6 @@ function animate() {
 
     //  帧率监测
     stat.update()
-    // if (firstPersonControls) {
-    //     firstPersonControls.update(1)
-    // }
 
     camera.lookAt(scene.position)
     composer.render(0.1)
@@ -201,8 +193,10 @@ function Index() {
         //  控制摄像机的位置
         const orbitControls = new OrbitControls(camera, document.getElementById('mainRef'))
         //  摄像机看到的初始位置
-        // debugger;
         orbitControls.target = new Vector3(0, 0, 0)
+        orbitControls.maxPolarAngle = Math.PI * 0.495
+        orbitControls.minDistance = 40.0
+        orbitControls.maxDistance = 200.0
         orbitControls.update()
         ;(mainRef.current as HTMLDivElement).innerHTML = ''
         ;(mainRef.current as HTMLDivElement).appendChild(renderer.domElement)
