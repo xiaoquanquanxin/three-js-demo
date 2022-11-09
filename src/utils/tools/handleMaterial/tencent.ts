@@ -117,3 +117,5 @@ const tencentMaterial = (scene: Scene): { rotateArr: Array<number> } => {
 }
 
 export { tencentMaterial }
+
+
