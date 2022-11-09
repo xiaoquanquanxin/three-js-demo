@@ -1,5 +1,5 @@
 import { PointLightHelper, Scene } from 'three'
-import { getPointLight } from 'src/utils/tools/pointLight'
+import { getPointLight } from 'src/utils/tools/lights/pointLight'
 
 //  点光源
 const pointLight = getPointLight()
