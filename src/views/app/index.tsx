@@ -7,7 +7,7 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
 import { useDebouncedCallback } from 'use-debounce'
 import { setAxesHelper } from 'src/utils/tools/axesHelper'
 import { getCamera } from 'src/utils/tools/camera'
-import { setDirectionalLight } from 'src/utils/tools/directionalLight'
+import { setDirectionalLight } from 'src/utils/tools/lights/directionalLight'
 import { loadGltf } from 'src/utils/tools/loaders/gltfLoader'
 import { addMaterialToScene } from 'src/utils/tools/material/addMaterialToScene'
 import { getBokehPass } from 'src/utils/tools/depthOfField'
@@ -16,6 +16,7 @@ import { tencentMaterial } from 'src/utils/tools/handleMaterial/tencent'
 import { mytowerGroupPosition } from 'src/constants/material/tower'
 import './index.css'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
+import { setAmbientLight } from 'src/utils/tools/ambientLight'
 
 //  我的模型
 let myModel: GLTF
@@ -71,7 +72,7 @@ setDirectionalLight(scene)
 //  【平面光】光源
 
 //  设置环境光
-// setAmbientLight(scene)
+setAmbientLight(scene)
 //  设置几何体 - 圆锥
 // const alarmGroup = setAlarmGroup(scene)
 //  设置地面
@@ -98,7 +99,6 @@ function animate() {
     //  帧率监测
     stat.update()
 
-    console.log(myModel.userData.rotateArr)
     // console.log(myModel.scene.children);
     myModel.scene.children.forEach((mesh, index) => {
         const y = myModel.userData.rotateArr[index]

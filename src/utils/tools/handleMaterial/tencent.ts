@@ -21,7 +21,10 @@ const materialTypeMap = [
 //  核心、实心材质
 const coreMaterial = (): Material => {
     const material = new MeshPhysicalMaterial({
-        color: 'rgba(52,96,230,0.8)',
+        // color: 'rgba(52,96,230,0.8)',
+        color: 'rgb(78,117,238)',
+        // emissive: 'rgba(174,244,245,0.09)',
+        // emissiveIntensity:2,
         transparent: true,
         opacity: 1,
         //  越低越光滑
@@ -55,13 +58,14 @@ const outerSphereMaterial = (): MeshPhysicalMaterial => {
 //  底座
 const pedestalMaterial = (): Material => {
     const material = new MeshPhysicalMaterial({
-        color: 'rgba(192,192,192,0.76)',
+        color: 'rgb(232,232,232)',
         transparent: true,
-        opacity: 0.8,
+        opacity: 1,
         //  越低越光滑
         roughness: 0.1,
-        specularIntensity: 0.3,
-        transmission: 0.3
+        specularIntensity: 3,
+        transmission: 0.6,
+        reflectivity: 0
     })
     material.color.convertSRGBToLinear()
     return material
