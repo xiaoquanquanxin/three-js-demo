@@ -21,21 +21,25 @@ const materialTypeMap = [
 //  核心、实心材质
 const coreMaterial = (): Material => {
     const material = new MeshPhysicalMaterial({
-        color: '#3460E6',
+        // color: 'rgba(52,96,230,0.8)',
+        color: 'rgb(78,117,238)',
+        // emissive: 'rgba(174,244,245,0.09)',
+        // emissiveIntensity:2,
         transparent: true,
         opacity: 1,
         //  越低越光滑
-        roughness: 0,
-        specularIntensity: 1,
-        transmission: 1,
+        roughness: 0.23,
+        specularIntensity: 0.7,
+        transmission: 0.9,
         envMapIntensity: 1
     })
+    material.color.convertSRGBToLinear()
     return material
 }
 
 //  外层
-const outerSphereMaterial = (): Material => {
-    const material: Material = new MeshPhysicalMaterial({
+const outerSphereMaterial = (): MeshPhysicalMaterial => {
+    const material: MeshPhysicalMaterial = new MeshPhysicalMaterial({
         color: '#aab8e5',
         emissive: '#0a15e7',
         transparent: true,
@@ -46,20 +50,24 @@ const outerSphereMaterial = (): Material => {
         transmission: 1
     })
     material.transparent = true
+    material.color.convertSRGBToLinear()
+
     return material
 }
 
 //  底座
 const pedestalMaterial = (): Material => {
     const material = new MeshPhysicalMaterial({
-        color: '#a3a3a3',
+        color: 'rgb(232,232,232)',
         transparent: true,
-        opacity: 0.8,
+        opacity: 1,
         //  越低越光滑
         roughness: 0.1,
-        specularIntensity: 0.3,
-        transmission: 0.3
+        specularIntensity: 3,
+        transmission: 0.6,
+        reflectivity: 0
     })
+    material.color.convertSRGBToLinear()
     return material
 }
 
@@ -109,3 +117,5 @@ const tencentMaterial = (scene: Scene): { rotateArr: Array<number> } => {
 }
 
 export { tencentMaterial }
+
+
