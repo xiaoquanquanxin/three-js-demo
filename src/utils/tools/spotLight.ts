@@ -1,9 +1,9 @@
 import { Color, SpotLight, SpotLightHelper, Scene } from 'three'
 
 //  聚光灯的影响的范围、影响的距离
-const pointLight = new SpotLight(   new Color('#ff00ff'),
+const pointLight = new SpotLight(   new Color('#abf7ff'),
     //  强度
-    10,
+    1,
     //  影响范围
     50,
     //  衰减

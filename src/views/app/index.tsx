@@ -17,6 +17,7 @@ import { mytowerGroupPosition } from 'src/constants/material/tower'
 import './index.css'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { setAmbientLight } from 'src/utils/tools/ambientLight'
+import { setSpotLight } from '../../utils/tools/spotLight'
 
 //  我的模型
 let myModel: GLTF
@@ -69,7 +70,8 @@ setAxesHelper(scene)
 setDirectionalLight(scene)
 //  设置半球光
 // setHemisphereLight(scene);
-//  【平面光】光源
+//  设置手电筒
+setSpotLight(scene);
 
 //  设置环境光
 setAmbientLight(scene)
