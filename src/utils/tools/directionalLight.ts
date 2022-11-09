@@ -1,9 +1,8 @@
-import { DirectionalLight, Scene } from 'three'
-import { directionalLightInitParams, directionalLightInitPosition } from 'src/constants/initConfig/directionalLight'
+import { Color, DirectionalLight, Scene } from 'three'
 
 //  平行光 黄色
-const directionalLight = new DirectionalLight(...directionalLightInitParams)
-directionalLight.position.set(...directionalLightInitPosition)
+const directionalLight = new DirectionalLight(new Color(0xffffff), 1)
+directionalLight.position.set(300, 100, 100)
 //  让光源产生阴影效果
 directionalLight.castShadow = true
 directionalLight.shadow.camera.near = 1
