@@ -1,4 +1,4 @@
-import { Mesh, MeshPhysicalMaterial } from 'three'
+import { BackSide, Color, DoubleSide, FrontSide, Mesh, MeshPhysicalMaterial, MeshStandardMaterial } from 'three'
 import { Material } from 'three/src/materials/Material'
 import { Scene } from 'three/src/Three'
 
@@ -65,7 +65,7 @@ const pedestalMaterial = (): Material => {
         roughness: 0.1,
         specularIntensity: 3,
         transmission: 0.6,
-        reflectivity: 0
+        reflectivity: 0.1
     })
     material.color.convertSRGBToLinear()
     return material
@@ -81,19 +81,31 @@ const tencentMaterial = (scene: Scene): { rotateArr: Array<number> } => {
     scene.traverse(function (node) {
         if (node instanceof Mesh) {
             //  赋值
-            node.material = (() => {
-                switch (materialTypeMap[i] as 0 | 1 | 2) {
-                    case 0:
-                        return coreMaterial()
-                    case 1:
-                        return outerSphereMaterial()
-                    case 2:
-                        //  底座
-                        return pedestalMaterial()
-                    default:
-                        throw i
-                }
-            })()
+            // material = (() => {
+            //     switch (materialTypeMap[i] as 0 | 1 | 2) {
+            //         case 0:
+            //             return coreMaterial()
+            //         case 1:
+            //             return outerSphereMaterial()
+            //         case 2:
+            //             //  底座
+            //             return pedestalMaterial()
+            //         default:
+            //             throw i
+            //     }
+            // })()
+            const material = new MeshPhysicalMaterial()
+            material.shadowSide = DoubleSide
+            material.transparent = false
+            material.color = new Color(0.3, 0, 0)
+            // material.colorWrite = true;
+            material.opacity = 0.7
+            material.roughness = 0.1
+            material.specularIntensity = 0.7
+            material.transmission = 0.2
+
+            // console.log(material
+            node.material = material
             //  产生投影
             node.castShadow = true
             //  接受投影
@@ -117,5 +129,3 @@ const tencentMaterial = (scene: Scene): { rotateArr: Array<number> } => {
 }
 
 export { tencentMaterial }
-
-

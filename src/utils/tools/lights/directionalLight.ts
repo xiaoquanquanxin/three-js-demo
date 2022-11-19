@@ -13,13 +13,13 @@ directionalLight.shadow.camera.left = -d
 directionalLight.shadow.camera.right = d
 directionalLight.shadow.camera.top = d
 directionalLight.shadow.camera.bottom = -d / 2
-// directionalLight.shadow.radius = 1
+directionalLight.shadow.radius = 50
 //  这个值必须为零
-directionalLight.shadow.bias = 0
+directionalLight.shadow.bias = 0.1
 // directionalLight.shadow.blurSamples =
 
-directionalLight.shadow.mapSize.height = 128
-directionalLight.shadow.mapSize.width = 128
+// directionalLight.shadow.mapSize.height = 128
+// directionalLight.shadow.mapSize.width = 128
 const mapSize = 1024 * 4
 directionalLight.shadow.mapSize.set(mapSize, mapSize)
 

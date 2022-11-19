@@ -2,7 +2,7 @@ import { Mesh, MeshPhongMaterial, PlaneBufferGeometry, PlaneGeometry, Scene } fr
 import { Reflector } from 'three/examples/jsm/objects/Reflector'
 
 //  地面
-const ground = new PlaneGeometry(100, 100)
+const ground = new PlaneGeometry(1000, 1000)
 const materialPlane = new MeshPhongMaterial({
     color: 0x808080,
     shininess: 5,
@@ -12,7 +12,7 @@ const materialPlane = new MeshPhongMaterial({
 const groundMesh = new Mesh(ground, materialPlane)
 //  沿x轴翻转90°，即为展平效果
 groundMesh.rotation.set(-0.5 * Math.PI, 0, 0)
-groundMesh.position.set(0, 0, 0)
+groundMesh.position.set(0, -20, 0)
 //  地面产生投影
 groundMesh.castShadow = false
 //  地面接受阴影
