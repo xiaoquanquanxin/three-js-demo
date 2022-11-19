@@ -18,13 +18,15 @@ import './index.css'
 import { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 import { setAmbientLight } from 'src/utils/tools/ambientLight'
 import { setSpotLight } from '../../utils/tools/spotLight'
+import { setPlaneMesh } from '../../utils/convexGeometry/ground'
+import { getBloomPass } from '../../utils/tools/bloomPass'
 
 //  我的模型
 let myModel: GLTF
 
 //  场景
 const scene = new Scene()
-scene.background = new Color(0xffffff)
+scene.background = new Color('#ffffff')
 
 //  渲染器
 const renderer = new WebGLRenderer({
@@ -55,8 +57,8 @@ const composer = new EffectComposer(renderer)
 composer.addPass(renderPass)
 
 //  加入辉光
-// const bloomPass = getBloomPass()
-// composer.addPass(bloomPass)
+const bloomPass = getBloomPass()
+composer.addPass(bloomPass)
 
 //  加入景深
 const bokehPass = getBokehPass(scene, camera)
@@ -67,18 +69,18 @@ setAxesHelper(scene)
 //  设置点光源
 //  setPointLight(scene)
 //  设置平行光
-setDirectionalLight(scene)
+// setDirectionalLight(scene)
 //  设置半球光
 // setHemisphereLight(scene);
 //  设置手电筒
-setSpotLight(scene);
+const spotLight = setSpotLight(scene)
 
 //  设置环境光
 setAmbientLight(scene)
 //  设置几何体 - 圆锥
 // const alarmGroup = setAlarmGroup(scene)
 //  设置地面
-// setPlaneMesh(scene)
+setPlaneMesh(scene)
 
 //  报警位置
 const stat = new Stat()
@@ -130,8 +132,12 @@ function Index() {
         const { rotateArr } = tencentMaterial(myModel.scene)
         // console.log(myModel.userData)
         myModel.userData.rotateArr = rotateArr
+        myModel.scene.position.set(0, 0, 0)
         //  添加素材到场景
         scene.add(myModel.scene)
+
+        //  聚光灯的目标
+        spotLight.spotLight.target = myModel.scene
 
         $mainRef.addEventListener('mousemove', e => {
             const { clientX, clientY } = e

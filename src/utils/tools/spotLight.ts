@@ -24,7 +24,7 @@ const spotLightHelper = new SpotLightHelper(spotLight, '#ff0000')
 let n = 0
 const pointLightAnimation = () => {
     const side = side_length(n, 20)
-    n+=.1
+    n += 0.1
     spotLight.position.set(side.adjacent_side, 50, side.opposite_side)
     spotLightHelper.update()
     requestAnimationFrame(() => {

@@ -4,9 +4,9 @@ import { Reflector } from 'three/examples/jsm/objects/Reflector'
 //  地面
 const ground = new PlaneGeometry(1000, 1000)
 const materialPlane = new MeshPhongMaterial({
-    color: 0x808080,
-    shininess: 5,
-    specular: 0x333333
+    color: 0xffffff,
+    shininess: 1,
+    specular: 0xffffff
 })
 
 const groundMesh = new Mesh(ground, materialPlane)
@@ -31,7 +31,7 @@ const options = {
 }
 
 //  反射
-const mirror = new Reflector(planeGeometry, options)
+// const mirror = new Reflector(planeGeometry, options)
 
 //  设置地面
 const setPlaneMesh = (scene: Scene) => {

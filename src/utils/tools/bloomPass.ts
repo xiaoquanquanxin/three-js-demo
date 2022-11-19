@@ -2,7 +2,7 @@ import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPa
 import { Vector2 } from 'three'
 
 //  辉光
-const bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 1.5, 0, 0)
+const bloomPass = new UnrealBloomPass(new Vector2(window.innerWidth, window.innerHeight), 0.3, 0, 0)
 
 //  获取辉光
 const getBloomPass = () => {

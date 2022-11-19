@@ -2,7 +2,7 @@ import { AmbientLight, Scene } from 'three'
 import { Color } from 'three/src/math/Color'
 
 //  环境光，白光
-const ambientLight = new AmbientLight(new Color('#64e2e3'), 0.1)
+const ambientLight = new AmbientLight(new Color('#ffffff'), 0.2)
 
 //  设置环境光
 const setAmbientLight = (scene: Scene) => {
